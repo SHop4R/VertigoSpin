@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2981b79b7e18144b29030fbd98cbb44c, type: 3}
+  m_Name: Bronze Wheel
+  m_EditorClassIdentifier: 
+  <WheelType>k__BackingField: 0
+  <HasBomb>k__BackingField: 1
+  <BombIcon>k__BackingField: {fileID: 21300000, guid: 3d3cb02b026c148b9a0fcf8d289897b2, type: 3}
+  <WheelBaseSprite>k__BackingField: {fileID: 21300000, guid: 78c44fa5521694024a507a0699cacd92, type: 3}
+  <IndicatorSprite>k__BackingField: {fileID: 21300000, guid: 524d3e66253d04fae85409c1aa73f556, type: 3}
