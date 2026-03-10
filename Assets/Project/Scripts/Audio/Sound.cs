@@ -3,15 +3,14 @@ namespace VertigoSpin.Project.Scripts.Audio
     public enum Sound
     {
         ButtonClick = 0,
-        Complete = 1,
-        PickUp = 2,
-        GridPlace = 3,
-        DeckPlace = 4,
-        Clear = 5,
-        Shoot = 6,
-        BlockDestroy = 7,
-        RowClear = 8,
-        IceBreak = 9,
-        LevelFail = 10,
+        WheelSpin = 1,
+        WheelTick = 2,
+        RewardCollect = 3,
+        BombExplode = 4,
+        Revive = 5,
+        Victory = 6,
+        ZoneAdvance = 7,
+        CollectAll = 8,
+        GameOver = 9
     }
 }
