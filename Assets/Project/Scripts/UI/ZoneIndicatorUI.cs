@@ -13,6 +13,10 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private Transform cardContainer;
         [SerializeField] private GameObject cardPrefab;
 
+        [Header("Next Spin Labels")]
+        [SerializeField] private TextMeshProUGUI nextSilverText;
+        [SerializeField] private TextMeshProUGUI nextGoldText;
+
         [Header("Text Colors")]
         [SerializeField] private Color normalTextColor = Color.white;
         [SerializeField] private Color safeTextColor = new(0.2f, 0.8f, 0.2f, 1f);
@@ -66,6 +70,7 @@ namespace VertigoSpin.Project.Scripts.UI
             ClearCards();
             CreateCards();
             UpdateColors(1);
+            UpdateNextSpinLabels(1);
             ScrollToZone(1, instant: true);
         }
 
@@ -95,6 +100,7 @@ namespace VertigoSpin.Project.Scripts.UI
         private void HandleZoneAdvanced(int zone)
         {
             UpdateColors(zone);
+            UpdateNextSpinLabels(zone);
             ScrollToZone(zone, instant: false);
         }
 
@@ -171,6 +177,24 @@ namespace VertigoSpin.Project.Scripts.UI
                 layout.spacing = 10f;
                 layout.childAlignment = TextAnchor.MiddleLeft;
             }
+        }
+
+        private void UpdateNextSpinLabels(int currentZone)
+        {
+            int nextSilver = GetNextZoneOfType(currentZone, SafeZoneInterval);
+            int nextGold = GetNextZoneOfType(currentZone, SuperZoneInterval);
+
+            if (nextSilverText != null)
+                nextSilverText.text = nextSilver > 0 ? $"NEXT SILVER: {nextSilver}" : "";
+
+            if (nextGoldText != null)
+                nextGoldText.text = nextGold > 0 ? $"NEXT GOLD: {nextGold}" : "";
+        }
+
+        private int GetNextZoneOfType(int currentZone, int interval)
+        {
+            int next = ((currentZone / interval) + 1) * interval;
+            return next <= _totalZones ? next : 0;
         }
 
         private void SetCardZoneNumber(GameObject card, int zone)

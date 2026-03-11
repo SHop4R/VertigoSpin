@@ -32,7 +32,7 @@ RectTransform:
   m_Children:
   - {fileID: 2005682347}
   m_Father: {fileID: 5138753919826911639}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -212,7 +212,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5138753919826911639}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -466,8 +466,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1247553051}
   - {fileID: 864740187}
+  - {fileID: 1247553051}
   - {fileID: 1029317339}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -491,6 +491,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardContainer: {fileID: 1942760557}
   cardPrefab: {fileID: 3576492280394105786, guid: 2c5ec2bb09f0b4332a335b55bd4d3918, type: 3}
+  nextSilverText: {fileID: 0}
+  nextGoldText: {fileID: 0}
   normalTextColor: {r: 1, g: 1, b: 1, a: 1}
   safeTextColor: {r: 0.2, g: 0.8, b: 0.2, a: 1}
   superTextColor: {r: 1, g: 0.84, b: 0, a: 1}
