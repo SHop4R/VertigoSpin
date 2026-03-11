@@ -35,9 +35,18 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             if (!reward || !slotPrefab || !slotContainer) return;
 
-            InventorySlotUI slot = Instantiate(slotPrefab, slotContainer);
-            slot.Setup(reward);
-            _slots.Add(slot);
+            InventorySlotUI existingSlot = _slots.FirstOrDefault(s => s && s.Reward == reward);
+
+            if (existingSlot)
+            {
+                existingSlot.IncrementCount();
+            }
+            else
+            {
+                InventorySlotUI slot = Instantiate(slotPrefab, slotContainer);
+                slot.Setup(reward);
+                _slots.Add(slot);
+            }
 
             _totalCoins += reward.CoinValue;
             UpdateTotalText();

@@ -5,6 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using VertigoSpin.Project.Scripts.Data;
+using VertigoSpin.Project.Scripts.Game;
 using VertigoSpin.Project.Scripts.Managers;
 
 namespace VertigoSpin.Project.Scripts.Wheel
@@ -20,13 +21,26 @@ namespace VertigoSpin.Project.Scripts.Wheel
         [SerializeField] private WheelSlice slicePrefab;
         [SerializeField] private Transform sliceContainer;
 
+        [Header("Buttons")]
+        [SerializeField] private Button spinButton;
+        [SerializeField] private Button collectButton;
+
+        [Header("Game Controller")]
+        [SerializeField] private SpinGameController gameController;
+
         private readonly List<WheelSlice> _slices = new();
         private WheelConfig _currentConfig;
         private int _selectedSliceIndex;
         private bool _isSpinning;
+        private bool _isTransitioning;
+        private Vector3 _wheelRestPosition;
+        private Transform _wheelParent;
+        private Tween _pulseTween;
 
-        private const float WindUpDuration = 0.4f;
-        private const float WindUpAngle = 30f;
+        private const float WindUpDuration = 1.2f;
+        private const float WindUpAngle = 75f;
+        private const float WindUpScale = 1.15f;
+        private const float ScaleBackDuration = 0.25f;
         private const float SpinDuration = 4f;
         private const float SnapDuration = 0.5f;
         private const int MinFullRotations = 5;
@@ -34,12 +48,16 @@ namespace VertigoSpin.Project.Scripts.Wheel
         private const float SliceAngle = 360f / WheelConfig.SliceCount;
         private const float SliceMinOffset = 2f;
         private const float SliceMaxOffset = 43f;
-        private const float SliceSize = 200f;
         private const float SliceRadius = 350f;
+
+        private const float TransitionDuration = 0.8f;
+        private const float OffScreenOffset = 2000f;
 
         private void Awake()
         {
             SeedRandomFromCrypto();
+            _wheelParent = wheelTransform.parent;
+            _wheelRestPosition = _wheelParent.localPosition;
             InitializeSlices();
         }
 
@@ -56,12 +74,38 @@ namespace VertigoSpin.Project.Scripts.Wheel
         {
             EventManager.SpinEvents.OnSpinStarted += Spin;
             EventManager.SpinEvents.OnWheelChanged += OnWheelConfigChanged;
+
+            if (spinButton)
+                spinButton.onClick.AddListener(HandleSpin);
+
+            if (collectButton)
+                collectButton.onClick.AddListener(HandleCollect);
         }
 
         private void OnDisable()
         {
             EventManager.SpinEvents.OnSpinStarted -= Spin;
             EventManager.SpinEvents.OnWheelChanged -= OnWheelConfigChanged;
+
+            if (spinButton)
+                spinButton.onClick.RemoveListener(HandleSpin);
+
+            if (collectButton)
+                collectButton.onClick.RemoveListener(HandleCollect);
+
+            StopPulse();
+        }
+
+        private void HandleSpin()
+        {
+            if (gameController)
+                gameController.RequestSpin();
+        }
+
+        private void HandleCollect()
+        {
+            if (gameController)
+                gameController.RequestCollect();
         }
 
         private void InitializeSlices()
@@ -74,7 +118,6 @@ namespace VertigoSpin.Project.Scripts.Wheel
                 slice.name = $"Slice_{i}";
 
                 RectTransform rt = slice.GetComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(SliceSize, SliceSize);
 
                 float angleRad = (90f - SliceAngle * i) * Mathf.Deg2Rad;
                 rt.localPosition = new Vector3(
@@ -90,8 +133,71 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void OnWheelConfigChanged(WheelConfig config)
         {
+            bool isFirstSetup = _currentConfig == null;
             _currentConfig = config;
-            SetupWheel();
+
+            if (isFirstSetup)
+            {
+                SetupWheel();
+                PlayOpenAnimation();
+            }
+            else
+            {
+                PlayCloseAnimation(() =>
+                {
+                    SetupWheel();
+                    wheelTransform.localRotation = Quaternion.identity;
+                    PlayOpenAnimation();
+                });
+            }
+        }
+
+        private void PlayOpenAnimation()
+        {
+            _isTransitioning = true;
+            SetSpinButtonActive(false);
+
+            Vector3 startPos = _wheelRestPosition + Vector3.down * OffScreenOffset;
+            _wheelParent.localPosition = startPos;
+            _wheelParent.localScale = Vector3.zero;
+
+            Sequence openSeq = DOTween.Sequence();
+
+            openSeq.Append(
+                _wheelParent.DOLocalMove(_wheelRestPosition, TransitionDuration)
+                    .SetEase(Ease.OutBack));
+
+            openSeq.Join(
+                _wheelParent.DOScale(Vector3.one, TransitionDuration)
+                    .SetEase(Ease.OutBack));
+
+            openSeq.OnComplete(() =>
+            {
+                _isTransitioning = false;
+                SetSpinButtonActive(true);
+                SetCollectButtonActive(true);
+                EventManager.SpinEvents.FireWheelTransitionComplete();
+            });
+        }
+
+        private void PlayCloseAnimation(TweenCallback onComplete)
+        {
+            _isTransitioning = true;
+            SetSpinButtonActive(false);
+
+            Vector3 targetPos = _wheelRestPosition + Vector3.down * OffScreenOffset;
+
+            Sequence closeSeq = DOTween.Sequence();
+
+            closeSeq.Append(
+                _wheelParent.DOLocalMove(targetPos, TransitionDuration)
+                    .SetEase(Ease.InBack));
+
+            closeSeq.Join(
+                _wheelParent.DOScale(Vector3.zero, TransitionDuration)
+                    .SetEase(Ease.InBack));
+
+            closeSeq.OnComplete(onComplete);
         }
 
         private void SetupWheel()
@@ -138,9 +244,11 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void Spin()
         {
-            if (_isSpinning) return;
+            if (_isSpinning || _isTransitioning) return;
 
             _isSpinning = true;
+            SetSpinButtonActive(false);
+            SetCollectButtonActive(false);
 
             int fullRotations = Random.Range(MinFullRotations, MaxFullRotations);
             int targetSlice = Random.Range(0, WheelConfig.SliceCount);
@@ -151,17 +259,27 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
             Sequence spinSequence = DOTween.Sequence();
 
-            // Wind-up: pull back slightly with InBack
+            // Wind-up: scale up + counter-rotate
             spinSequence.Append(
                 wheelTransform
-                    .DORotate(new(0f, 0f, WindUpAngle), WindUpDuration, RotateMode.LocalAxisAdd)
-                    .SetEase(Ease.InBack));
+                    .DORotate(new(0f, 0f, -WindUpAngle), WindUpDuration, RotateMode.LocalAxisAdd)
+                    .SetEase(Ease.InOutSine));
 
-            // Main spin
+            spinSequence.Join(
+                _wheelParent
+                    .DOScale(WindUpScale, WindUpDuration)
+                    .SetEase(Ease.InOutSine));
+
+            // Main spin + scale back to normal
             spinSequence.Append(
                 wheelTransform
                     .DORotate(new(0f, 0f, -totalRotation), SpinDuration, RotateMode.FastBeyond360)
                     .SetEase(Ease.OutQuart));
+
+            spinSequence.Join(
+                _wheelParent
+                    .DOScale(1f, ScaleBackDuration)
+                    .SetEase(Ease.Flash));
 
             // Main spin completes, then snap to nearest 45° and fire result
             spinSequence.OnComplete(SnapToNearestSlice);
@@ -191,6 +309,45 @@ namespace VertigoSpin.Project.Scripts.Wheel
                 EventManager.RewardEvents.FireRewardEarned(_slices[_selectedSliceIndex].Reward);
 
             EventManager.SpinEvents.FireSpinEnded();
+        }
+
+        private void SetSpinButtonActive(bool active)
+        {
+            if (!spinButton) return;
+
+            spinButton.interactable = active;
+
+            if (active)
+                StartPulse();
+            else
+                StopPulse();
+        }
+
+        private void SetCollectButtonActive(bool active)
+        {
+            if (collectButton)
+                collectButton.interactable = active;
+        }
+
+        private void StartPulse()
+        {
+            if (!spinButton) return;
+
+            StopPulse();
+
+            _pulseTween = spinButton.transform
+                .DOScale(1.1f, 1f)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
+        }
+
+        private void StopPulse()
+        {
+            if (_pulseTween != null && _pulseTween.IsActive())
+                _pulseTween.Kill();
+
+            if (spinButton)
+                spinButton.transform.localScale = Vector3.one;
         }
     }
 }

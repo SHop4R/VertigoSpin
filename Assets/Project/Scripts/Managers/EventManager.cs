@@ -10,10 +10,12 @@ namespace VertigoSpin.Project.Scripts.Managers
             public static event Action OnSpinStarted;
             public static event Action OnSpinEnded;
             public static event Action<WheelConfig> OnWheelChanged;
+            public static event Action OnWheelTransitionComplete;
 
             public static void FireSpinStarted() => OnSpinStarted?.Invoke();
             public static void FireSpinEnded() => OnSpinEnded?.Invoke();
             public static void FireWheelChanged(WheelConfig config) => OnWheelChanged?.Invoke(config);
+            public static void FireWheelTransitionComplete() => OnWheelTransitionComplete?.Invoke();
         }
 
         public static class RewardEvents

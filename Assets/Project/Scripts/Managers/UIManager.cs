@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VertigoSpin.Project.Scripts.UI;
@@ -60,6 +62,17 @@ namespace VertigoSpin.Project.Scripts.Managers
             );
 
             return localPoint;
+        }
+
+        public static Tween TextAnimation(TMP_Text text, float target = 1.2f, float duration = 0.2f,
+            Ease easeType = Ease.OutBack)
+        {
+            text.transform.DOKill();
+            text.transform.localScale = Vector3.one;
+
+            return text.transform.DOScale(target, duration)
+                .SetEase(easeType)
+                .SetLoops(2, LoopType.Yoyo);
         }
 
         private void HandleBombHit() => ShowPanel(PanelType.Revive);
