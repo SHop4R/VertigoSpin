@@ -52,13 +52,35 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private const float TransitionDuration = 0.8f;
         private const float OffScreenOffset = 2000f;
+        private const float SlideInDuration = 0.6f;
+        private const float SlideInOffset = 800f;
 
         private void Awake()
         {
             SeedRandomFromCrypto();
             _wheelParent = wheelTransform.parent;
             _wheelRestPosition = _wheelParent.localPosition;
+
+            // Start in closed state (off-screen, scaled down)
+            _wheelParent.localPosition = _wheelRestPosition + Vector3.down * OffScreenOffset;
+            _wheelParent.localScale = Vector3.zero;
+
             InitializeSlices();
+            PlayCollectButtonSlideIn();
+        }
+
+        private void PlayCollectButtonSlideIn()
+        {
+            if (!collectButton) return;
+
+            RectTransform rt = collectButton.transform as RectTransform;
+            if (rt == null) return;
+
+            Vector2 restPos = rt.anchoredPosition;
+            rt.anchoredPosition = restPos + Vector2.right * SlideInOffset;
+
+            rt.DOAnchorPos(restPos, SlideInDuration)
+                .SetEase(Ease.OutCubic);
         }
 
         private static void SeedRandomFromCrypto()
@@ -156,6 +178,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
         {
             _isTransitioning = true;
             SetSpinButtonActive(false);
+            SetCollectButtonActive(true);
 
             Vector3 startPos = _wheelRestPosition + Vector3.down * OffScreenOffset;
             _wheelParent.localPosition = startPos;
@@ -184,6 +207,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
         {
             _isTransitioning = true;
             SetSpinButtonActive(false);
+            SetCollectButtonActive(true);
 
             Vector3 targetPos = _wheelRestPosition + Vector3.down * OffScreenOffset;
 
