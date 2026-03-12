@@ -28,6 +28,8 @@ namespace VertigoSpin.Project.Scripts.UI
         private const int SafeZoneInterval = 5;
         private const int SuperZoneInterval = 30;
         private const float ScrollDuration = 0.3f;
+        private const float SlideInDuration = 0.6f;
+        private const float SlideInOffset = 1200f;
 
         private readonly List<GameObject> _cards = new();
         private int _totalZones;
@@ -45,23 +47,18 @@ namespace VertigoSpin.Project.Scripts.UI
         private void Start()
         {
             Initialize();
+            PlaySlideIn();
+            PlayLabelsSlideIn();
         }
 
         private void OnEnable()
         {
             EventManager.ZoneEvents.OnZoneAdvanced += HandleZoneAdvanced;
-            EventManager.GameEvents.OnGameRestart += HandleGameRestart;
         }
 
         private void OnDisable()
         {
             EventManager.ZoneEvents.OnZoneAdvanced -= HandleZoneAdvanced;
-            EventManager.GameEvents.OnGameRestart -= HandleGameRestart;
-        }
-
-        private void HandleGameRestart()
-        {
-            Initialize();
         }
 
         public void Initialize(int totalZones = MaxZone)
@@ -139,6 +136,35 @@ namespace VertigoSpin.Project.Scripts.UI
                 _containerRect.DOAnchorPosX(targetX, ScrollDuration)
                     .SetEase(Ease.OutCubic);
             }
+        }
+
+        private void PlaySlideIn()
+        {
+            if (_viewportRect == null) return;
+
+            Vector2 restPos = _viewportRect.anchoredPosition;
+            _viewportRect.anchoredPosition = restPos + Vector2.up * SlideInOffset;
+
+            _viewportRect.DOAnchorPos(restPos, SlideInDuration)
+                .SetEase(Ease.OutCubic);
+        }
+
+        private void PlayLabelsSlideIn()
+        {
+            SlideFromRight(nextSilverText);
+            SlideFromRight(nextGoldText);
+        }
+
+        private static void SlideFromRight(TMP_Text label)
+        {
+            if (label == null) return;
+
+            RectTransform rt = label.rectTransform;
+            Vector2 restPos = rt.anchoredPosition;
+            rt.anchoredPosition = restPos + Vector2.right * SlideInOffset;
+
+            rt.DOAnchorPos(restPos, SlideInDuration)
+                .SetEase(Ease.OutCubic);
         }
 
         private void EnsureMask()

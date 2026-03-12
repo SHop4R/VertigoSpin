@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 289560687686119117}
   - component: {fileID: 7040795263509628197}
   m_Layer: 0
-  m_Name: ui_card_zone
+  m_Name: ui_card_zoneText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
