@@ -70,7 +70,7 @@ namespace VertigoSpin.Project.Scripts.Game
 
         public void RequestCollect()
         {
-            if (!_zoneManager.CanCollect || _currentState != GameState.WaitingToSpin) return;
+            if (_currentState != GameState.WaitingToSpin) return;
 
             EventManager.RewardEvents.FireCollectAndLeave();
         }
@@ -82,6 +82,7 @@ namespace VertigoSpin.Project.Scripts.Game
 
             if (_zoneManager.IsLastZone)
             {
+                CoinManager.Instance.AddCoins(_inventory.TotalCoinValue);
                 EventManager.GameEvents.FireVictory();
                 return;
             }
@@ -124,9 +125,8 @@ namespace VertigoSpin.Project.Scripts.Game
 
         private void OnCollectAndLeave()
         {
-            if (!_zoneManager.CanCollect) return;
-
             _currentState = GameState.Collecting;
+            CoinManager.Instance.AddCoins(_inventory.TotalCoinValue);
             AudioManager.Instance.PlaySound(Sound.CollectAll);
             EventManager.GameEvents.FireVictory();
         }

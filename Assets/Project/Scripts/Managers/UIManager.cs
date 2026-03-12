@@ -17,15 +17,11 @@ namespace VertigoSpin.Project.Scripts.Managers
         private void OnEnable()
         {
             EventManager.GameEvents.OnBombHit += HandleBombHit;
-            EventManager.GameEvents.OnGameOver += HandleGameOver;
-            EventManager.GameEvents.OnVictory += HandleVictory;
         }
 
         private void OnDisable()
         {
             EventManager.GameEvents.OnBombHit -= HandleBombHit;
-            EventManager.GameEvents.OnGameOver -= HandleGameOver;
-            EventManager.GameEvents.OnVictory -= HandleVictory;
         }
 
         private void ShowPanel(PanelType panelType, bool hideOthers = false)
@@ -76,7 +72,5 @@ namespace VertigoSpin.Project.Scripts.Managers
         }
 
         private void HandleBombHit() => ShowPanel(PanelType.Revive);
-        private void HandleGameOver() => ShowPanel(PanelType.GameOver, hideOthers: true);
-        private void HandleVictory() => ShowPanel(PanelType.Victory, hideOthers: true);
     }
 }
