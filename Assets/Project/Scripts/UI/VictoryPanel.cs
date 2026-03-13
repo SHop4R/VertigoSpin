@@ -19,7 +19,7 @@ namespace VertigoSpin.Project.Scripts.UI
                 continueButton = transform.Find("ui_button_victory_continue")?.GetComponent<Button>();
 
             if (!coinsText)
-                coinsText = transform.Find("ui_text_victory_coins")?.GetComponent<TextMeshProUGUI>();
+                coinsText = transform.Find("ui_text_victory_coins_value")?.GetComponent<TextMeshProUGUI>();
         }
 
         private void OnEnable()

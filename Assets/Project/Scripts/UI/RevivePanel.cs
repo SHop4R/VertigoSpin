@@ -19,10 +19,10 @@ namespace VertigoSpin.Project.Scripts.UI
         private void OnValidate()
         {
             if (!CoinReviveButton)
-                CoinReviveButton = transform.Find("ui_button_revive_coin")?.GetComponent<Button>();
+                CoinReviveButton = transform.Find("ui_container_revive_buttons/ui_button_revive_coin")?.GetComponent<Button>();
 
             if (!GiveUpButton)
-                GiveUpButton = transform.Find("ui_button_revive_giveup")?.GetComponent<Button>();
+                GiveUpButton = transform.Find("ui_container_revive_buttons/ui_button_revive_giveup")?.GetComponent<Button>();
         }
 
         private void OnEnable()
