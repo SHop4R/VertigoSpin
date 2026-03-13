@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 using VertigoSpin.Project.Scripts.Data;
 using VertigoSpin.Project.Scripts.Game;
 using VertigoSpin.Project.Scripts.Managers;
+using Random = UnityEngine.Random;
 
 namespace VertigoSpin.Project.Scripts.Wheel
 {
@@ -17,19 +19,17 @@ namespace VertigoSpin.Project.Scripts.Wheel
         [SerializeField] private Image wheelBaseImage;
         [SerializeField] private Image indicatorImage;
 
-        [Header("Slice Prefab")]
-        [SerializeField] private WheelSlice slicePrefab;
+        [Header("Slice Container")]
         [SerializeField] private Transform sliceContainer;
 
         [Header("Buttons")]
         [SerializeField] private Button spinButton;
         [SerializeField] private Button collectButton;
 
-        [Header("Game Controller")]
-        [SerializeField] private SpinGameController gameController;
 
         private readonly List<WheelSlice> _slices = new();
         private WheelConfig _currentConfig;
+        private SpinGameController _gameController;
         private int _selectedSliceIndex;
         private bool _isSpinning;
         private bool _isTransitioning;
@@ -57,14 +57,18 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void Awake()
         {
+            _gameController = FindObjectOfType<SpinGameController>();
+            
             SeedRandomFromCrypto();
             _wheelParent = wheelTransform.parent;
             _wheelRestPosition = _wheelParent.localPosition;
 
-            // Start in closed state (off-screen, scaled down)
             _wheelParent.localPosition = _wheelRestPosition + Vector3.down * OffScreenOffset;
             _wheelParent.localScale = Vector3.zero;
+        }
 
+        private void Start()
+        {
             InitializeSlices();
             PlayCollectButtonSlideIn();
         }
@@ -74,7 +78,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
             if (!collectButton) return;
 
             RectTransform rt = collectButton.transform as RectTransform;
-            if (rt == null) return;
+            if (!rt) return;
 
             Vector2 restPos = rt.anchoredPosition;
             rt.anchoredPosition = restPos + Vector2.right * SlideInOffset;
@@ -120,14 +124,14 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void HandleSpin()
         {
-            if (gameController)
-                gameController.RequestSpin();
+            if (_gameController)
+                _gameController.RequestSpin();
         }
 
         private void HandleCollect()
         {
-            if (gameController)
-                gameController.RequestCollect();
+            if (_gameController)
+                _gameController.RequestCollect();
         }
 
         private void InitializeSlices()
@@ -136,7 +140,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
             for (int i = 0; i < WheelConfig.SliceCount; i++)
             {
-                WheelSlice slice = Instantiate(slicePrefab, sliceContainer);
+                WheelSlice slice = PoolManager.Instance.SpawnWheelSlice(sliceContainer);
                 slice.name = $"Slice_{i}";
 
                 RectTransform rt = slice.GetComponent<RectTransform>();
@@ -328,9 +332,15 @@ namespace VertigoSpin.Project.Scripts.Wheel
             _isSpinning = false;
 
             if (_slices[_selectedSliceIndex].IsBomb)
+            {
                 EventManager.GameEvents.FireBombHit();
+            }
             else
-                EventManager.RewardEvents.FireRewardEarned(_slices[_selectedSliceIndex].Reward);
+            {
+                WheelSlice winningSlice = _slices[_selectedSliceIndex];
+                EventManager.RewardEvents.FireRewardFlyStarted(
+                    winningSlice.Reward, winningSlice.IconWorldPosition);
+            }
 
             EventManager.SpinEvents.FireSpinEnded();
         }

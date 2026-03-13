@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using VertigoSpin.Project.Scripts.Data;
 
 namespace VertigoSpin.Project.Scripts.Managers
@@ -21,9 +22,11 @@ namespace VertigoSpin.Project.Scripts.Managers
         public static class RewardEvents
         {
             public static event Action<RewardData> OnRewardEarned;
+            public static event Action<RewardData, Vector3> OnRewardFlyStarted;
             public static event Action OnCollectAndLeave;
 
             public static void FireRewardEarned(RewardData reward) => OnRewardEarned?.Invoke(reward);
+            public static void FireRewardFlyStarted(RewardData reward, Vector3 worldPos) => OnRewardFlyStarted?.Invoke(reward, worldPos);
             public static void FireCollectAndLeave() => OnCollectAndLeave?.Invoke();
         }
 
