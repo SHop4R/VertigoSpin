@@ -4,16 +4,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VertigoSpin.Project.Scripts.Managers;
-
 namespace VertigoSpin.Project.Scripts.UI
 {
     public sealed class ZoneIndicatorUI : MonoBehaviour
     {
         [Header("Card Setup")]
         [SerializeField] private Transform cardContainer;
-        [SerializeField] private GameObject cardPrefab;
 
         [Header("Next Spin Labels")]
+        [SerializeField] private RectTransform nextSilverParent;
+        [SerializeField] private RectTransform nextGoldParent;
         [SerializeField] private TextMeshProUGUI nextSilverText;
         [SerializeField] private TextMeshProUGUI nextGoldText;
 
@@ -31,7 +31,7 @@ namespace VertigoSpin.Project.Scripts.UI
         private const float SlideInDuration = 0.6f;
         private const float SlideInOffset = 1200f;
 
-        private readonly List<GameObject> _cards = new();
+        private readonly List<RectTransform> _cards = new();
         private int _totalZones;
         private RectTransform _viewportRect;
         private RectTransform _containerRect;
@@ -40,6 +40,7 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             _viewportRect = transform as RectTransform;
             _containerRect = cardContainer as RectTransform;
+
             EnsureMask();
             SetupContainer();
         }
@@ -67,17 +68,17 @@ namespace VertigoSpin.Project.Scripts.UI
             ClearCards();
             CreateCards();
             UpdateColors(1);
-            UpdateNextSpinLabels(1);
+            UpdateNextSpinLabels(1, animate: false);
             ScrollToZone(1, instant: true);
         }
 
         private void CreateCards()
         {
-            if (cardPrefab == null || cardContainer == null) return;
+            if (cardContainer == null) return;
 
             for (int i = 0; i < _totalZones; i++)
             {
-                GameObject card = Instantiate(cardPrefab, cardContainer);
+                RectTransform card = PoolManager.Instance.SpawnZoneCard(cardContainer);
                 int zone = i + 1;
                 SetCardZoneNumber(card, zone);
                 _cards.Add(card);
@@ -86,10 +87,10 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void ClearCards()
         {
-            foreach (GameObject card in _cards)
+            foreach (RectTransform card in _cards)
             {
                 if (card != null)
-                    Destroy(card);
+                    PoolManager.Instance.ReturnZoneCard(card);
             }
             _cards.Clear();
         }
@@ -119,7 +120,7 @@ namespace VertigoSpin.Project.Scripts.UI
 
             Canvas.ForceUpdateCanvases();
 
-            RectTransform cardRect = _cards[cardIndex].transform as RectTransform;
+            RectTransform cardRect = _cards[cardIndex];
             if (cardRect == null) return;
 
             Vector3 cardWorldPos = cardRect.position;
@@ -151,15 +152,14 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void PlayLabelsSlideIn()
         {
-            SlideFromRight(nextSilverText);
-            SlideFromRight(nextGoldText);
+            SlideFromRight(nextSilverParent);
+            SlideFromRight(nextGoldParent);
         }
 
-        private static void SlideFromRight(TMP_Text label)
+        private static void SlideFromRight(RectTransform rt)
         {
-            if (label == null) return;
+            if (rt == null) return;
 
-            RectTransform rt = label.rectTransform;
             Vector2 restPos = rt.anchoredPosition;
             rt.anchoredPosition = restPos + Vector2.right * SlideInOffset;
 
@@ -205,16 +205,32 @@ namespace VertigoSpin.Project.Scripts.UI
             }
         }
 
-        private void UpdateNextSpinLabels(int currentZone)
+        private void UpdateNextSpinLabels(int currentZone, bool animate = true)
         {
             int nextSilver = GetNextZoneOfType(currentZone, SafeZoneInterval);
             int nextGold = GetNextZoneOfType(currentZone, SuperZoneInterval);
 
             if (nextSilverText != null)
-                nextSilverText.text = nextSilver > 0 ? $"NEXT SILVER: {nextSilver}" : "";
+            {
+                string silverValue = nextSilver > 0 ? $"NEXT SILVER: {nextSilver}" : "";
+                if (nextSilverText.text != silverValue)
+                {
+                    nextSilverText.text = silverValue;
+                    if (animate && silverValue.Length > 0)
+                        UIManager.TextAnimation(nextSilverText);
+                }
+            }
 
             if (nextGoldText != null)
-                nextGoldText.text = nextGold > 0 ? $"NEXT GOLD: {nextGold}" : "";
+            {
+                string goldValue = nextGold > 0 ? $"NEXT GOLD: {nextGold}" : "";
+                if (nextGoldText.text != goldValue)
+                {
+                    nextGoldText.text = goldValue;
+                    if (animate && goldValue.Length > 0)
+                        UIManager.TextAnimation(nextGoldText);
+                }
+            }
         }
 
         private int GetNextZoneOfType(int currentZone, int interval)
@@ -223,14 +239,14 @@ namespace VertigoSpin.Project.Scripts.UI
             return next <= _totalZones ? next : 0;
         }
 
-        private void SetCardZoneNumber(GameObject card, int zone)
+        private void SetCardZoneNumber(RectTransform card, int zone)
         {
             TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
             if (tmp != null)
                 tmp.text = zone.ToString();
         }
 
-        private void SetCardColor(GameObject card, int zone, int currentZone)
+        private void SetCardColor(RectTransform card, int zone, int currentZone)
         {
             TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
             if (tmp == null) return;
