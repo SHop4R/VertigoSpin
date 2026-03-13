@@ -4,10 +4,8 @@ namespace VertigoSpin.Project.Scripts.Data
     {
         WaitingToSpin = 0,
         Spinning = 1,
-        ShowingReward = 2,
-        BombHit = 3,
-        GameOver = 4,
-        Victory = 5,
-        Collecting = 6
+        BombHit = 2,
+        GameOver = 3,
+        Collecting = 4
     }
 }

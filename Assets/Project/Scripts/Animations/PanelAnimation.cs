@@ -13,10 +13,7 @@ namespace VertigoSpin.Project.Scripts.Animations
         [Header("Animation")]
         [SerializeField] private float animationDelay = 0.3f;
 
-        private void OnEnable()
-        {
-            StartCoroutine(Animate());
-        }
+        private void OnEnable() => StartCoroutine(Animate());
 
         private void OnDisable()
         {

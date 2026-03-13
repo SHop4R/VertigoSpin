@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VertigoSpin.Project.Scripts.Managers;
+
 namespace VertigoSpin.Project.Scripts.UI
 {
     public sealed class ZoneIndicatorUI : MonoBehaviour
@@ -32,6 +34,7 @@ namespace VertigoSpin.Project.Scripts.UI
         private const float SlideInOffset = 1200f;
 
         private readonly List<RectTransform> _cards = new();
+        private readonly List<TextMeshProUGUI> _cardTexts = new();
         private int _totalZones;
         private RectTransform _viewportRect;
         private RectTransform _containerRect;
@@ -52,17 +55,10 @@ namespace VertigoSpin.Project.Scripts.UI
             PlayLabelsSlideIn();
         }
 
-        private void OnEnable()
-        {
-            EventManager.ZoneEvents.OnZoneAdvanced += HandleZoneAdvanced;
-        }
+        private void OnEnable() => EventManager.ZoneEvents.OnZoneAdvanced += HandleZoneAdvanced;
+        private void OnDisable() => EventManager.ZoneEvents.OnZoneAdvanced -= HandleZoneAdvanced;
 
-        private void OnDisable()
-        {
-            EventManager.ZoneEvents.OnZoneAdvanced -= HandleZoneAdvanced;
-        }
-
-        public void Initialize(int totalZones = MaxZone)
+        private void Initialize(int totalZones = MaxZone)
         {
             _totalZones = totalZones;
             ClearCards();
@@ -74,25 +70,31 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void CreateCards()
         {
-            if (cardContainer == null) return;
+            if (!cardContainer) return;
 
             for (int i = 0; i < _totalZones; i++)
             {
                 RectTransform card = PoolManager.Instance.SpawnZoneCard(cardContainer);
+                TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
                 int zone = i + 1;
-                SetCardZoneNumber(card, zone);
+
+                if (tmp)
+                    tmp.text = zone.ToString();
+
                 _cards.Add(card);
+                _cardTexts.Add(tmp);
             }
         }
 
         private void ClearCards()
         {
-            foreach (RectTransform card in _cards)
+            foreach (RectTransform card in _cards.Where(card => card))
             {
-                if (card != null)
-                    PoolManager.Instance.ReturnZoneCard(card);
+                PoolManager.Instance.ReturnZoneCard(card);
             }
+            
             _cards.Clear();
+            _cardTexts.Clear();
         }
 
         private void HandleZoneAdvanced(int zone)
@@ -106,14 +108,13 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             for (int i = 0; i < _cards.Count; i++)
             {
-                int zone = i + 1;
-                SetCardColor(_cards[i], zone, currentZone);
+                SetCardColor(i, i + 1, currentZone);
             }
         }
 
         private void ScrollToZone(int currentZone, bool instant)
         {
-            if (_containerRect == null || _viewportRect == null) return;
+            if (!_containerRect || !_viewportRect) return;
 
             int cardIndex = currentZone - 1;
             if (cardIndex < 0 || cardIndex >= _cards.Count) return;
@@ -121,16 +122,14 @@ namespace VertigoSpin.Project.Scripts.UI
             Canvas.ForceUpdateCanvases();
 
             RectTransform cardRect = _cards[cardIndex];
-            if (cardRect == null) return;
+            if (!cardRect) return;
 
             Vector3 cardWorldPos = cardRect.position;
             Vector3 cardInViewport = _viewportRect.InverseTransformPoint(cardWorldPos);
             float targetX = _containerRect.anchoredPosition.x - cardInViewport.x;
 
             if (instant)
-            {
-                _containerRect.anchoredPosition = new Vector2(targetX, _containerRect.anchoredPosition.y);
-            }
+                _containerRect.anchoredPosition = new(targetX, _containerRect.anchoredPosition.y);
             else
             {
                 _containerRect.DOKill();
@@ -141,7 +140,7 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void PlaySlideIn()
         {
-            if (_viewportRect == null) return;
+            if (!_viewportRect) return;
 
             Vector2 restPos = _viewportRect.anchoredPosition;
             _viewportRect.anchoredPosition = restPos + Vector2.up * SlideInOffset;
@@ -156,53 +155,49 @@ namespace VertigoSpin.Project.Scripts.UI
             SlideFromRight(nextGoldParent);
         }
 
-        private static void SlideFromRight(RectTransform rt)
+        private static void SlideFromRight(RectTransform rect)
         {
-            if (rt == null) return;
+            if (!rect) return;
 
-            Vector2 restPos = rt.anchoredPosition;
-            rt.anchoredPosition = restPos + Vector2.right * SlideInOffset;
+            Vector2 restPos = rect.anchoredPosition;
+            rect.anchoredPosition = restPos + Vector2.right * SlideInOffset;
 
-            rt.DOAnchorPos(restPos, SlideInDuration)
+            rect.DOAnchorPos(restPos, SlideInDuration)
                 .SetEase(Ease.OutCubic);
         }
 
         private void EnsureMask()
         {
-            if (GetComponent<RectMask2D>() == null)
+            if (!GetComponent<RectMask2D>())
                 gameObject.AddComponent<RectMask2D>();
         }
 
         private void SetupContainer()
         {
-            if (_containerRect == null) return;
+            if (!_containerRect) return;
 
-            // Anchor to left-center so container extends rightward from the left edge
-            _containerRect.anchorMin = new Vector2(0f, 0.5f);
-            _containerRect.anchorMax = new Vector2(0f, 0.5f);
-            _containerRect.pivot = new Vector2(0f, 0.5f);
+            _containerRect.anchorMin = new(0f, 0.5f);
+            _containerRect.anchorMax = new(0f, 0.5f);
+            _containerRect.pivot = new(0f, 0.5f);
 
-            // Auto-size container width to fit all cards
             ContentSizeFitter fitter = _containerRect.GetComponent<ContentSizeFitter>();
-            if (fitter == null)
+            
+            if (!fitter)
                 fitter = _containerRect.gameObject.AddComponent<ContentSizeFitter>();
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
-            // Match container height to viewport
-            _containerRect.sizeDelta = new Vector2(0f, _viewportRect.rect.height);
+            _containerRect.sizeDelta = new(0f, _viewportRect.rect.height);
 
-            // Fix layout group so cards keep their natural size
             HorizontalLayoutGroup layout = _containerRect.GetComponent<HorizontalLayoutGroup>();
-            if (layout != null)
-            {
-                layout.childForceExpandWidth = false;
-                layout.childForceExpandHeight = false;
-                layout.childControlWidth = false;
-                layout.childControlHeight = false;
-                layout.spacing = 10f;
-                layout.childAlignment = TextAnchor.MiddleLeft;
-            }
+            
+            if (!layout) return;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            layout.spacing = 10f;
+            layout.childAlignment = TextAnchor.MiddleLeft;
         }
 
         private void UpdateNextSpinLabels(int currentZone, bool animate = true)
@@ -210,9 +205,12 @@ namespace VertigoSpin.Project.Scripts.UI
             int nextSilver = GetNextZoneOfType(currentZone, SafeZoneInterval);
             int nextGold = GetNextZoneOfType(currentZone, SuperZoneInterval);
 
-            if (nextSilverText != null)
+            if (nextSilverText)
             {
-                string silverValue = nextSilver > 0 ? $"NEXT SILVER: {nextSilver}" : "";
+                string silverValue = nextSilver > 0 
+                    ? $"NEXT SILVER: {nextSilver}" 
+                    : string.Empty;
+                
                 if (nextSilverText.text != silverValue)
                 {
                     nextSilverText.text = silverValue;
@@ -221,16 +219,17 @@ namespace VertigoSpin.Project.Scripts.UI
                 }
             }
 
-            if (nextGoldText != null)
-            {
-                string goldValue = nextGold > 0 ? $"NEXT GOLD: {nextGold}" : "";
-                if (nextGoldText.text != goldValue)
-                {
-                    nextGoldText.text = goldValue;
-                    if (animate && goldValue.Length > 0)
-                        UIManager.TextAnimation(nextGoldText);
-                }
-            }
+            if (!nextGoldText) return;
+            
+            string goldValue = nextGold > 0 
+                ? $"NEXT GOLD: {nextGold}" 
+                : string.Empty;
+            
+            if (nextGoldText.text == goldValue) return;
+            nextGoldText.text = goldValue;
+            
+            if (animate && goldValue.Length > 0)
+                UIManager.TextAnimation(nextGoldText);
         }
 
         private int GetNextZoneOfType(int currentZone, int interval)
@@ -239,37 +238,26 @@ namespace VertigoSpin.Project.Scripts.UI
             return next <= _totalZones ? next : 0;
         }
 
-        private void SetCardZoneNumber(RectTransform card, int zone)
+        private void SetCardColor(int cardIndex, int zone, int currentZone)
         {
-            TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmp != null)
-                tmp.text = zone.ToString();
-        }
-
-        private void SetCardColor(RectTransform card, int zone, int currentZone)
-        {
-            TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmp == null) return;
+            TextMeshProUGUI tmp = _cardTexts[cardIndex];
+            if (!tmp) return;
 
             if (zone == currentZone)
-            {
                 tmp.color = currentZoneTextColor;
-            }
             else if (zone < currentZone)
-            {
                 tmp.color = passedZoneTint;
-            }
             else
-            {
                 tmp.color = GetZoneTextColor(zone);
-            }
         }
 
         private Color GetZoneTextColor(int zone)
         {
             if (zone % SuperZoneInterval == 0) return superTextColor;
-            if (zone % SafeZoneInterval == 0) return safeTextColor;
-            return normalTextColor;
+            
+            return zone % SafeZoneInterval == 0 
+                ? safeTextColor 
+                : normalTextColor;
         }
     }
 }

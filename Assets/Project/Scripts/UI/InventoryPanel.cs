@@ -18,6 +18,7 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private TextMeshProUGUI totalCoinText;
 
         private readonly List<InventorySlotUI> _slots = new();
+        private readonly Dictionary<RewardData, InventorySlotUI> _slotLookup = new();
         private int _totalCoins;
         private bool _isClearing;
 
@@ -42,13 +43,13 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void PlaySlideIn()
         {
-            RectTransform rt = transform as RectTransform;
-            if (rt == null) return;
+            RectTransform rect = transform as RectTransform;
+            if (!rect) return;
 
-            Vector2 restPos = rt.anchoredPosition;
-            rt.anchoredPosition = restPos + Vector2.left * SlideInOffset;
+            Vector2 restPos = rect.anchoredPosition;
+            rect.anchoredPosition = restPos + Vector2.left * SlideInOffset;
 
-            rt.DOAnchorPos(restPos, SlideInDuration)
+            rect.DOAnchorPos(restPos, SlideInDuration)
                 .SetEase(Ease.OutCubic);
         }
 
@@ -70,23 +71,17 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             if (!reward || !slotContainer) return;
 
-            InventorySlotUI existingSlot = _slots.FirstOrDefault(s => s && s.Reward == reward);
-            bool isNewSlot = existingSlot == null;
+            bool isNewSlot = !_slotLookup.TryGetValue(reward, out InventorySlotUI targetSlot);
 
-            InventorySlotUI targetSlot;
             if (isNewSlot)
             {
                 targetSlot = PoolManager.Instance.SpawnInventorySlot(slotContainer);
                 targetSlot.Setup(reward);
                 targetSlot.transform.localScale = Vector3.zero;
                 _slots.Add(targetSlot);
-            }
-            else
-            {
-                targetSlot = existingSlot;
+                _slotLookup[reward] = targetSlot;
             }
 
-            // Force layout rebuild so the slot has its final position
             Canvas.ForceUpdateCanvases();
 
             Vector3 targetWorldPos = targetSlot.transform.position;
@@ -111,11 +106,11 @@ namespace VertigoSpin.Project.Scripts.UI
             });
         }
 
-        private void PlayFlyAnimation(Sprite icon, Vector3 startWorldPos, Vector3 targetWorldPos,
+        private static void PlayFlyAnimation(Sprite icon, Vector3 startWorldPos, Vector3 targetWorldPos,
             TweenCallback onComplete)
         {
             Canvas canvas = UIManager.Instance.Canvas;
-            if (!canvas || canvas.worldCamera == null)
+            if (!canvas || !canvas.worldCamera)
             {
                 onComplete?.Invoke();
                 return;
@@ -125,10 +120,10 @@ namespace VertigoSpin.Project.Scripts.UI
             flyObj.transform.SetParent(canvas.transform, false);
 
             RectTransform rt = flyObj.AddComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(FlyIconSize, FlyIconSize);
+            rt.anchorMin = new(0.5f, 0.5f);
+            rt.anchorMax = new(0.5f, 0.5f);
+            rt.pivot = new(0.5f, 0.5f);
+            rt.sizeDelta = new(FlyIconSize, FlyIconSize);
             rt.SetAsLastSibling();
 
             Image img = flyObj.AddComponent<Image>();
@@ -145,22 +140,19 @@ namespace VertigoSpin.Project.Scripts.UI
 
             Sequence flySeq = DOTween.Sequence();
 
-            // Pop out from wheel
             flySeq.Append(rt.DOScale(FlyPopScale, FlyPopDuration).SetEase(Ease.OutBack));
 
-            // Fly along bezier arc
             flySeq.Append(
-                DOTween.To(() => 0f, t =>
-                {
-                    float inv = 1f - t;
-                    Vector2 pos = inv * inv * startPos
-                                  + 2f * inv * t * control
-                                  + t * t * endPos;
-                    rt.anchoredPosition = pos;
-                }, 1f, FlyDuration)
-                .SetEase(Ease.InOutQuad));
+                DOVirtual.Float(0f, 1f, FlyDuration, t =>
+                    {
+                        float inv = 1f - t;
+                        Vector2 pos = inv * inv * startPos
+                                      + 2f * inv * t * control
+                                      + t * t * endPos;
+                        rt.anchoredPosition = pos;
+                    })
+                    .SetEase(Ease.InOutQuad));
 
-            // Shrink while flying
             flySeq.Join(
                 rt.DOScale(FlyEndScale, FlyDuration).SetEase(Ease.InQuad));
 
@@ -183,20 +175,14 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             Sequence clearSeq = DOTween.Sequence();
 
-            // Dial down coin text to 0
-            if (totalCoinText != null && _totalCoins > 0)
+            if (totalCoinText && _totalCoins > 0)
             {
                 int current = _totalCoins;
                 clearSeq.Join(
-                    DOTween.To(() => current, value =>
-                    {
-                        current = value;
-                        totalCoinText.text = value.ToString();
-                    }, 0, DialDownDuration)
-                    .SetEase(Ease.OutQuad));
+                    totalCoinText.DOCounter(current, 0, DialDownDuration, false)
+                        .SetEase(Ease.OutQuad));
             }
 
-            // Shrink all slots simultaneously
             foreach (InventorySlotUI slot in _slots)
             {
                 if (!slot) continue;
@@ -207,12 +193,13 @@ namespace VertigoSpin.Project.Scripts.UI
 
             clearSeq.OnComplete(() =>
             {
-                foreach (InventorySlotUI slot in _slots)
+                foreach (InventorySlotUI slot in _slots.Where(slot => slot))
                 {
-                    if (slot) PoolManager.Instance.ReturnInventorySlot(slot);
+                    PoolManager.Instance.ReturnInventorySlot(slot);
                 }
 
                 _slots.Clear();
+                _slotLookup.Clear();
                 _totalCoins = 0;
                 UpdateTotalText(false);
                 _isClearing = false;
@@ -223,7 +210,7 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void UpdateTotalText(bool animate = true)
         {
-            if (totalCoinText == null) return;
+            if (!totalCoinText) return;
 
             totalCoinText.text = _totalCoins.ToString();
 

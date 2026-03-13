@@ -16,17 +16,13 @@ namespace VertigoSpin.Project.Scripts.Wheel
     {
         [Header("Wheel References")]
         [SerializeField] private Transform wheelTransform;
-        [SerializeField] private Image wheelBaseImage;
         [SerializeField] private Image indicatorImage;
-
-        [Header("Slice Container")]
-        [SerializeField] private Transform sliceContainer;
 
         [Header("Buttons")]
         [SerializeField] private Button spinButton;
         [SerializeField] private Button collectButton;
 
-
+        private Image _wheelBaseImage;
         private readonly List<WheelSlice> _slices = new();
         private WheelConfig _currentConfig;
         private SpinGameController _gameController;
@@ -58,7 +54,11 @@ namespace VertigoSpin.Project.Scripts.Wheel
         private void Awake()
         {
             _gameController = FindObjectOfType<SpinGameController>();
-            
+            _wheelBaseImage = wheelTransform.GetComponent<Image>();
+
+            if (_wheelBaseImage) _wheelBaseImage.preserveAspect = true;
+            if (indicatorImage) indicatorImage.preserveAspect = true;
+
             SeedRandomFromCrypto();
             _wheelParent = wheelTransform.parent;
             _wheelRestPosition = _wheelParent.localPosition;
@@ -93,7 +93,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
             using (RNGCryptoServiceProvider rng = new())
                 rng.GetBytes(bytes);
 
-            Random.InitState(System.BitConverter.ToInt32(bytes, 0));
+            Random.InitState(BitConverter.ToInt32(bytes, 0));
         }
 
         private void OnEnable()
@@ -140,13 +140,13 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
             for (int i = 0; i < WheelConfig.SliceCount; i++)
             {
-                WheelSlice slice = PoolManager.Instance.SpawnWheelSlice(sliceContainer);
+                WheelSlice slice = PoolManager.Instance.SpawnWheelSlice(wheelTransform);
                 slice.name = $"Slice_{i}";
 
                 RectTransform rt = slice.GetComponent<RectTransform>();
 
                 float angleRad = (90f - SliceAngle * i) * Mathf.Deg2Rad;
-                rt.localPosition = new Vector3(
+                rt.localPosition = new(
                     Mathf.Cos(angleRad) * SliceRadius,
                     Mathf.Sin(angleRad) * SliceRadius,
                     0f);
@@ -159,7 +159,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void OnWheelConfigChanged(WheelConfig config)
         {
-            bool isFirstSetup = _currentConfig == null;
+            bool isFirstSetup = !_currentConfig;
             _currentConfig = config;
 
             if (isFirstSetup)
@@ -230,12 +230,12 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void SetupWheel()
         {
-            if (_currentConfig == null) return;
+            if (!_currentConfig) return;
 
-            if (wheelBaseImage != null)
-                wheelBaseImage.sprite = _currentConfig.WheelBaseSprite;
+            if (_wheelBaseImage)
+                _wheelBaseImage.sprite = _currentConfig.WheelBaseSprite;
 
-            if (indicatorImage != null)
+            if (indicatorImage)
                 indicatorImage.sprite = _currentConfig.IndicatorSprite;
 
             List<RewardData> filteredRewards = RewardsManager.Instance.GetFilteredRewards(_currentConfig.WheelType);
@@ -281,13 +281,12 @@ namespace VertigoSpin.Project.Scripts.Wheel
             int fullRotations = Random.Range(MinFullRotations, MaxFullRotations);
             int targetSlice = Random.Range(0, WheelConfig.SliceCount);
             float totalRotation = fullRotations * 360f + targetSlice * SliceAngle
-                                  + Random.Range(SliceMinOffset, SliceMaxOffset);
+                                                       + Random.Range(SliceMinOffset, SliceMaxOffset);
 
             _selectedSliceIndex = targetSlice;
 
             Sequence spinSequence = DOTween.Sequence();
 
-            // Wind-up: scale up + counter-rotate
             spinSequence.Append(
                 wheelTransform
                     .DORotate(new(0f, 0f, -WindUpAngle), WindUpDuration, RotateMode.LocalAxisAdd)
@@ -298,7 +297,6 @@ namespace VertigoSpin.Project.Scripts.Wheel
                     .DOScale(WindUpScale, WindUpDuration)
                     .SetEase(Ease.InOutSine));
 
-            // Main spin + scale back to normal
             spinSequence.Append(
                 wheelTransform
                     .DORotate(new(0f, 0f, -totalRotation), SpinDuration, RotateMode.FastBeyond360)
@@ -309,7 +307,6 @@ namespace VertigoSpin.Project.Scripts.Wheel
                     .DOScale(1f, ScaleBackDuration)
                     .SetEase(Ease.Flash));
 
-            // Main spin completes, then snap to nearest 45° and fire result
             spinSequence.OnComplete(SnapToNearestSlice);
         }
 
@@ -332,9 +329,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
             _isSpinning = false;
 
             if (_slices[_selectedSliceIndex].IsBomb)
-            {
                 EventManager.GameEvents.FireBombHit();
-            }
             else
             {
                 WheelSlice winningSlice = _slices[_selectedSliceIndex];

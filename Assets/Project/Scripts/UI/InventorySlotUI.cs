@@ -9,13 +9,17 @@ namespace VertigoSpin.Project.Scripts.UI
 {
     public sealed class InventorySlotUI : MonoBehaviour, IPoolable
     {
-        [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI countText;
 
+        private Image _iconImage;
         private int _count;
 
-        public RewardData Reward { get; private set; }
+        private void Awake()
+        {
+            _iconImage = GetComponentInChildren<Image>();
+            if (_iconImage) _iconImage.preserveAspect = true;
+        }
 
         public void OnSpawn()
         {
@@ -24,9 +28,8 @@ namespace VertigoSpin.Project.Scripts.UI
 
         public void OnReturn()
         {
-            Reward = null;
             _count = 0;
-            if (iconImage) iconImage.sprite = null;
+            if (_iconImage) _iconImage.sprite = null;
             if (nameText) nameText.text = "";
             if (countText) countText.text = "";
         }
@@ -35,11 +38,10 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             if (!reward) return;
 
-            Reward = reward;
             _count = 1;
 
-            if (iconImage)
-                iconImage.sprite = reward.Icon;
+            if (_iconImage)
+                _iconImage.sprite = reward.Icon;
 
             if (nameText)
                 nameText.text = reward.RewardName;

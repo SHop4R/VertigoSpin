@@ -17,10 +17,6 @@ namespace VertigoSpin.Project.Scripts.Game
         private InventoryManager _inventory;
         private GameState _currentState;
 
-        public bool CanCollect => _zoneManager.CanCollect && _currentState == GameState.WaitingToSpin;
-        public int CurrentZone => _zoneManager.CurrentZone;
-        public WheelType CurrentWheelType => _zoneManager.CurrentWheelType;
-
         private WheelConfig GetConfigForType(WheelType type) => type switch
         {
             WheelType.Bronze => bronzeConfig,
@@ -31,8 +27,8 @@ namespace VertigoSpin.Project.Scripts.Game
 
         private void Start()
         {
-            _zoneManager = new ZoneManager();
-            _inventory = new InventoryManager();
+            _zoneManager = new();
+            _inventory = new();
             _currentState = GameState.WaitingToSpin;
 
             EventManager.SpinEvents.FireWheelChanged(GetConfigForType(WheelType.Bronze));

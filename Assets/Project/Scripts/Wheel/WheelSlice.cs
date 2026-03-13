@@ -7,19 +7,32 @@ namespace VertigoSpin.Project.Scripts.Wheel
 {
     public sealed class WheelSlice : MonoBehaviour, IPoolable
     {
-        [SerializeField] private Image iconImage;
+        private Image _iconImage;
 
         public RewardData Reward{ get; private set; }
         public bool IsBomb{ get; private set; }
-        public Vector3 IconWorldPosition => iconImage ? iconImage.transform.position : transform.position;
+        
+        public Vector3 IconWorldPosition 
+            => _iconImage 
+                ? _iconImage.transform.position
+                : transform.position;
+
+        private void Awake()
+        {
+            _iconImage = GetComponentInChildren<Image>();
+            
+            if (!_iconImage) return;
+            _iconImage.raycastTarget = false;
+            _iconImage.preserveAspect = true;
+        }
 
         public void Setup(RewardData reward)
         {
             Reward = reward;
             IsBomb = false;
 
-            iconImage.sprite = reward.Icon;
-            iconImage.enabled = true;
+            _iconImage.sprite = reward.Icon;
+            _iconImage.enabled = true;
         }
 
         public void SetupAsBomb(Sprite bombIcon)
@@ -27,33 +40,20 @@ namespace VertigoSpin.Project.Scripts.Wheel
             Reward = null;
             IsBomb = true;
 
-            iconImage.sprite = bombIcon;
-            iconImage.enabled = true;
+            _iconImage.sprite = bombIcon;
+            _iconImage.enabled = true;
         }
 
-        public void Clear()
+        private void Clear()
         {
             Reward = null;
             IsBomb = false;
 
-            iconImage.sprite = null;
-            iconImage.enabled = false;
+            _iconImage.sprite = null;
+            _iconImage.enabled = false;
         }
 
-        public void OnSpawn() { }
-
-        public void OnReturn()
-        {
-            Clear();
-        }
-
-        private void OnValidate()
-        {
-            if (iconImage)
-            {
-                iconImage.raycastTarget = false;
-                iconImage.preserveAspect = true;
-            }
-        }
+        public void OnSpawn() {}
+        public void OnReturn() => Clear();
     }
 }

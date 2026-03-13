@@ -3,7 +3,6 @@ using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using VertigoSpin.Project.Scripts.UI;
 using VertigoSpin.Project.Scripts.Utils;
 
@@ -17,11 +16,13 @@ namespace VertigoSpin.Project.Scripts.Managers
         private void OnEnable()
         {
             EventManager.GameEvents.OnBombHit += HandleBombHit;
+            EventManager.GameEvents.OnVictory += HandleVictory;
         }
 
         private void OnDisable()
         {
             EventManager.GameEvents.OnBombHit -= HandleBombHit;
+            EventManager.GameEvents.OnVictory -= HandleVictory;
         }
 
         private void ShowPanel(PanelType panelType, bool hideOthers = false)
@@ -47,7 +48,7 @@ namespace VertigoSpin.Project.Scripts.Managers
 
         public Vector2 GetScreenPosition(Vector3 worldPosition)
         {
-            if (!Canvas || Canvas.worldCamera == null)
+            if (!Canvas || !Canvas.worldCamera)
                 return Vector2.zero;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -72,5 +73,6 @@ namespace VertigoSpin.Project.Scripts.Managers
         }
 
         private void HandleBombHit() => ShowPanel(PanelType.Revive);
+        private void HandleVictory() => ShowPanel(PanelType.Victory);
     }
 }

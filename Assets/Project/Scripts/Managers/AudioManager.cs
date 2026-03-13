@@ -23,10 +23,7 @@ namespace VertigoSpin.Project.Scripts.Managers
         {
             SoundData[] soundDataArray = Resources.LoadAll<SoundData>("Sounds");
             soundData.AddRange(soundDataArray);
-            
-            if (soundDataArray.Length == 0)
-                Debug.LogError("No sound data found in the Resources folder.");
-            
+
             IEnumerable<SoundData> soundDatum = soundData
                 .Where(data => !_createdSounds.ContainsKey(data.soundType));
 

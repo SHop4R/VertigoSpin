@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -13,8 +12,7 @@ namespace VertigoSpin.Project.Scripts.Pooling
 
         public Pool(PoolStats<T> stats, Transform parent = null)
         {
-            if (!stats.Prefab)
-                throw new ArgumentNullException(nameof(stats.Prefab));
+            if (!stats.Prefab) return;
 
             _prefab = stats.Prefab;
             _poolParent = parent;

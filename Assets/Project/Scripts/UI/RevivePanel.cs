@@ -16,15 +16,6 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private TextMeshProUGUI reviveCostText;
         [SerializeField] private TextMeshProUGUI playerCoinsText;
 
-        private void OnValidate()
-        {
-            if (!CoinReviveButton)
-                CoinReviveButton = transform.Find("ui_container_revive_buttons/ui_button_revive_coin")?.GetComponent<Button>();
-
-            if (!GiveUpButton)
-                GiveUpButton = transform.Find("ui_container_revive_buttons/ui_button_revive_giveup")?.GetComponent<Button>();
-        }
-
         private void OnEnable()
         {
             if (CoinReviveButton)
@@ -78,11 +69,7 @@ namespace VertigoSpin.Project.Scripts.UI
 
             if (playerCoinsText)
             {
-                DOTween.To(
-                        () => coinsBefore,
-                        value => playerCoinsText.text = value.ToString(),
-                        coinsAfter,
-                        DialDownDuration)
+                playerCoinsText.DOCounter(coinsBefore, coinsAfter, DialDownDuration, false)
                     .SetEase(Ease.OutQuad)
                     .OnComplete(() =>
                     {

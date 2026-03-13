@@ -69,11 +69,9 @@ namespace VertigoSpin.Project.Scripts.Animations
                 .SetLink(obj.gameObject)
                 .OnComplete(() =>
                 {
-                    if (obj)
-                    {
-                        obj.gameObject.SetActive(false);
-                        obj.localScale = scale;
-                    }
+                    if (!obj) return;
+                    obj.gameObject.SetActive(false);
+                    obj.localScale = scale;
                 });
         }
     }

@@ -8,15 +8,12 @@ namespace VertigoSpin.Project.Scripts.Managers
         private const string CoinKey = "PlayerCoins";
         private const int BaseReviveCost = 50;
 
-        public int Coins { get; private set; }
-        public int CurrentReviveCost { get; private set; } = BaseReviveCost;
+        public int Coins{ get; private set; }
+        public int CurrentReviveCost{ get; private set; } = BaseReviveCost;
 
         public bool CanAffordRevive => Coins >= CurrentReviveCost;
 
-        private void Start()
-        {
-            Coins = PlayerPrefs.GetInt(CoinKey, 150);
-        }
+        private void Start() => Coins = PlayerPrefs.GetInt(CoinKey, 0);
 
         private void OnEnable()
         {
@@ -48,10 +45,7 @@ namespace VertigoSpin.Project.Scripts.Managers
             return true;
         }
 
-        private void ResetReviveCost()
-        {
-            CurrentReviveCost = BaseReviveCost;
-        }
+        private void ResetReviveCost() => CurrentReviveCost = BaseReviveCost;
 
         private void Save()
         {

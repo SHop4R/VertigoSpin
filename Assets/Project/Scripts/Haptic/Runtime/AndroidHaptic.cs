@@ -32,11 +32,9 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
                 s_hasAmplitudeControl = s_vibrator.Call<bool>("hasAmplitudeControl");
 
                 _isInitialized = true;
-                Debug.Log($"AndroidHaptic initialized. Amplitude control: {s_hasAmplitudeControl}");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Failed to initialize AndroidHaptic: {e.Message}");
                 _isInitialized = false;
             }
 #else
@@ -75,14 +73,14 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
             {
                 amplitude = Mathf.Clamp(amplitude, 1, 255);
 
-                AndroidJavaClass vibrationEffectClass = new AndroidJavaClass("android.os.VibrationEffect");
+                AndroidJavaClass vibrationEffectClass = new("android.os.VibrationEffect");
                 AndroidJavaObject effect = vibrationEffectClass.CallStatic<AndroidJavaObject>(
                     "createOneShot", milliseconds, amplitude);
                 s_vibrator.Call("vibrate", effect);
             }
             else if (s_vibrator != null)
             {
-                Vibrate(milliseconds); // Fallback to simple vibration
+                Vibrate(milliseconds);
             }
 #endif
         }
@@ -99,7 +97,7 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
                     amplitudes[i] = Mathf.Clamp(amplitudes[i], 0, 255);
                 }
 
-                AndroidJavaClass vibrationEffectClass = new AndroidJavaClass("android.os.VibrationEffect");
+                AndroidJavaClass vibrationEffectClass = new("android.os.VibrationEffect");
                 AndroidJavaObject effect = vibrationEffectClass.CallStatic<AndroidJavaObject>(
                     "createWaveform", timings, amplitudes, repeat);
                 s_vibrator.Call("vibrate", effect);

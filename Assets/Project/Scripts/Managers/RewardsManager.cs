@@ -11,8 +11,6 @@ namespace VertigoSpin.Project.Scripts.Managers
         [Header("All Rewards")]
         [SerializeField] private List<RewardData> allRewards = new();
 
-        public IReadOnlyList<RewardData> AllRewards => allRewards;
-
         public List<RewardData> GetFilteredRewards(WheelType wheelType)
         {
             return allRewards
