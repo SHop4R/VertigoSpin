@@ -1,15 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using VertigoSpin.Project.Scripts.Data;
+using VertigoSpin.Project.Scripts.Pooling;
 
 namespace VertigoSpin.Project.Scripts.Wheel
 {
-    public sealed class WheelSlice : MonoBehaviour
+    public sealed class WheelSlice : MonoBehaviour, IPoolable
     {
         [SerializeField] private Image iconImage;
 
         public RewardData Reward{ get; private set; }
         public bool IsBomb{ get; private set; }
+        public Vector3 IconWorldPosition => iconImage ? iconImage.transform.position : transform.position;
 
         public void Setup(RewardData reward)
         {
@@ -36,6 +38,13 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
             iconImage.sprite = null;
             iconImage.enabled = false;
+        }
+
+        public void OnSpawn() { }
+
+        public void OnReturn()
+        {
+            Clear();
         }
 
         private void OnValidate()

@@ -10,5 +10,13 @@ namespace VertigoSpin.Project.Scripts.Pooling
         [field: SerializeField] public int DefaultPoolSize{ get; private set; }
         [field: SerializeField] public int MaxPoolSize{ get; private set; }
         [field: SerializeField] public bool PreGenerate{ get; private set; }
+
+        public PoolStats(T prefab, int defaultPoolSize, int maxPoolSize, bool preGenerate = false)
+        {
+            Prefab = prefab;
+            DefaultPoolSize = defaultPoolSize;
+            MaxPoolSize = maxPoolSize;
+            PreGenerate = preGenerate;
+        }
     }
 }
