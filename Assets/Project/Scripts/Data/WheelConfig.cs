@@ -18,6 +18,10 @@ namespace VertigoSpin.Project.Scripts.Data
         [field: SerializeField] public Sprite WheelBaseSprite{ get; private set; }
         [field: SerializeField] public Sprite IndicatorSprite{ get; private set; }
 
+        [field: Header("Particle Colors")]
+        [field: SerializeField, Tooltip("Colors used for spin particles. Particles pick a random color from this list.")]
+        public Color[] ParticleColors{ get; private set; } = { Color.white };
+
         public const int SliceCount = 8;
     }
 }

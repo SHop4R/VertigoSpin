@@ -314,6 +314,8 @@ namespace VertigoSpin.Project.Scripts.Wheel
                     .DOScale(WindUpScale, WindUpDuration)
                     .SetEase(Ease.InOutSine));
 
+            spinSequence.AppendCallback(() => EventManager.SpinEvents.FireWheelSpinning());
+
             spinSequence.Append(
                 wheelTransform
                     .DORotate(new(0f, 0f, -totalRotation), SpinDuration, RotateMode.FastBeyond360)

@@ -17,3 +17,7 @@ MonoBehaviour:
   <BombIcon>k__BackingField: {fileID: 21300000, guid: 3d3cb02b026c148b9a0fcf8d289897b2, type: 3}
   <WheelBaseSprite>k__BackingField: {fileID: 21300000, guid: 78c44fa5521694024a507a0699cacd92, type: 3}
   <IndicatorSprite>k__BackingField: {fileID: 21300000, guid: 524d3e66253d04fae85409c1aa73f556, type: 3}
+  <ParticleColors>k__BackingField:
+  - {r: 1, g: 0.55, b: 0, a: 1}
+  - {r: 1, g: 0.27, b: 0, a: 1}
+  - {r: 1, g: 0.84, b: 0, a: 1}
