@@ -14,10 +14,12 @@ namespace VertigoSpin.Project.Scripts.Managers
         [Header("UI Pools")]
         [SerializeField] private PoolStats<InventorySlotUI> inventorySlotPoolStats;
         [SerializeField] private PoolStats<RectTransform> zoneCardPoolStats;
+        [SerializeField] private PoolStats<FlyingReward> flyingRewardPoolStats;
 
         private Pool<WheelSlice> _wheelSlicePool;
         private Pool<InventorySlotUI> _inventorySlotPool;
         private Pool<RectTransform> _zoneCardPool;
+        private Pool<FlyingReward> _flyingRewardPool;
 
         private void Awake()
         {
@@ -29,6 +31,9 @@ namespace VertigoSpin.Project.Scripts.Managers
 
             if (zoneCardPoolStats.Prefab)
                 _zoneCardPool = new(zoneCardPoolStats, transform);
+
+            if (flyingRewardPoolStats.Prefab)
+                _flyingRewardPool = new(flyingRewardPoolStats, transform);
         }
 
         public WheelSlice SpawnWheelSlice(Transform parent)
@@ -71,6 +76,20 @@ namespace VertigoSpin.Project.Scripts.Managers
         {
             if (_zoneCardPool == null || !card) return;
             _zoneCardPool.Return(card);
+        }
+
+        public FlyingReward SpawnFlyingReward(Transform parent)
+        {
+            if (_flyingRewardPool == null) return null;
+            FlyingReward reward = _flyingRewardPool.Spawn();
+            reward.transform.SetParent(parent, false);
+            return reward;
+        }
+
+        public void ReturnFlyingReward(FlyingReward reward)
+        {
+            if (_flyingRewardPool == null || !reward) return;
+            _flyingRewardPool.Return(reward);
         }
     }
 }

@@ -8,6 +8,7 @@ using VertigoSpin.Project.Scripts.Audio;
 using VertigoSpin.Project.Scripts.Data;
 using VertigoSpin.Project.Scripts.Haptic.Runtime;
 using VertigoSpin.Project.Scripts.Managers;
+using VertigoSpin.Project.Scripts.Utils;
 
 namespace VertigoSpin.Project.Scripts.UI
 {
@@ -121,20 +122,17 @@ namespace VertigoSpin.Project.Scripts.UI
                 return;
             }
 
-            GameObject flyObj = new("FlyingReward");
-            flyObj.transform.SetParent(canvas.transform, false);
+            FlyingReward flyingReward = PoolManager.Instance.SpawnFlyingReward(canvas.transform);
+            if (!flyingReward)
+            {
+                onComplete?.Invoke();
+                return;
+            }
 
-            RectTransform rt = flyObj.AddComponent<RectTransform>();
-            rt.anchorMin = new(0.5f, 0.5f);
-            rt.anchorMax = new(0.5f, 0.5f);
-            rt.pivot = new(0.5f, 0.5f);
-            rt.sizeDelta = new(FlyIconSize, FlyIconSize);
+            flyingReward.Setup(icon);
+
+            RectTransform rt = flyingReward.RectTransform;
             rt.SetAsLastSibling();
-
-            Image img = flyObj.AddComponent<Image>();
-            img.sprite = icon;
-            img.raycastTarget = false;
-            img.preserveAspect = true;
 
             Vector2 startPos = UIManager.Instance.GetScreenPosition(startWorldPos);
             Vector2 endPos = UIManager.Instance.GetScreenPosition(targetWorldPos);
@@ -150,11 +148,7 @@ namespace VertigoSpin.Project.Scripts.UI
             flySeq.Append(
                 DOVirtual.Float(0f, 1f, FlyDuration, t =>
                     {
-                        float inv = 1f - t;
-                        Vector2 pos = inv * inv * startPos
-                                      + 2f * inv * t * control
-                                      + t * t * endPos;
-                        rt.anchoredPosition = pos;
+                        rt.anchoredPosition = VectorExtensions.QuadraticBezier(startPos, control, endPos, t);
                     })
                     .SetEase(Ease.InOutQuad));
 
@@ -163,7 +157,7 @@ namespace VertigoSpin.Project.Scripts.UI
 
             flySeq.OnComplete(() =>
             {
-                Destroy(flyObj);
+                PoolManager.Instance.ReturnFlyingReward(flyingReward);
                 onComplete?.Invoke();
             });
         }
