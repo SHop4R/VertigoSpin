@@ -102,6 +102,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
         {
             EventManager.SpinEvents.OnSpinStarted += Spin;
             EventManager.SpinEvents.OnWheelChanged += OnWheelConfigChanged;
+            EventManager.SpinEvents.OnWheelHide += HandleWheelHide;
 
             if (spinButton)
                 spinButton.onClick.AddListener(HandleSpin);
@@ -114,6 +115,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
         {
             EventManager.SpinEvents.OnSpinStarted -= Spin;
             EventManager.SpinEvents.OnWheelChanged -= OnWheelConfigChanged;
+            EventManager.SpinEvents.OnWheelHide -= HandleWheelHide;
 
             if (spinButton)
                 spinButton.onClick.RemoveListener(HandleSpin);
@@ -231,6 +233,16 @@ namespace VertigoSpin.Project.Scripts.Wheel
                     .SetEase(Ease.InBack));
 
             closeSeq.OnComplete(onComplete);
+        }
+
+        private void HandleWheelHide()
+        {
+            PlayCloseAnimation(() =>
+            {
+                _currentConfig = null;
+                _isTransitioning = false;
+                EventManager.SpinEvents.FireWheelHidden();
+            });
         }
 
         private void SetupWheel()

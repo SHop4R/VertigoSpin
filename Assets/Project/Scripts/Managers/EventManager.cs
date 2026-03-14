@@ -12,11 +12,15 @@ namespace VertigoSpin.Project.Scripts.Managers
             public static event Action OnSpinEnded;
             public static event Action<WheelConfig> OnWheelChanged;
             public static event Action OnWheelTransitionComplete;
+            public static event Action OnWheelHide;
+            public static event Action OnWheelHidden;
 
             public static void FireSpinStarted() => OnSpinStarted?.Invoke();
             public static void FireSpinEnded() => OnSpinEnded?.Invoke();
             public static void FireWheelChanged(WheelConfig config) => OnWheelChanged?.Invoke(config);
             public static void FireWheelTransitionComplete() => OnWheelTransitionComplete?.Invoke();
+            public static void FireWheelHide() => OnWheelHide?.Invoke();
+            public static void FireWheelHidden() => OnWheelHidden?.Invoke();
         }
 
         public static class RewardEvents
@@ -35,13 +39,15 @@ namespace VertigoSpin.Project.Scripts.Managers
             public static event Action OnBombHit;
             public static event Action OnRevive;
             public static event Action OnGameOver;
-            public static event Action OnVictory;
+            public static event Action<int> OnVictory;
+            public static event Action OnVictoryCollect;
             public static event Action OnGameRestart;
 
             public static void FireBombHit() => OnBombHit?.Invoke();
             public static void FireRevive() => OnRevive?.Invoke();
             public static void FireGameOver() => OnGameOver?.Invoke();
-            public static void FireVictory() => OnVictory?.Invoke();
+            public static void FireVictory(int coins) => OnVictory?.Invoke(coins);
+            public static void FireVictoryCollect() => OnVictoryCollect?.Invoke();
             public static void FireGameRestart() => OnGameRestart?.Invoke();
         }
 

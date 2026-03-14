@@ -16,6 +16,7 @@ namespace VertigoSpin.Project.Scripts.Game
         private ZoneManager _zoneManager;
         private InventoryManager _inventory;
         private GameState _currentState;
+        private int _pendingVictoryCoins;
 
         private WheelConfig GetConfigForType(WheelType type) => type switch
         {
@@ -79,14 +80,23 @@ namespace VertigoSpin.Project.Scripts.Game
 
             if (_zoneManager.IsLastZone)
             {
-                CoinManager.Instance.AddCoins(_inventory.TotalCoinValue);
-                EventManager.GameEvents.FireVictory();
+                _currentState = GameState.GameOver;
+                _pendingVictoryCoins = _inventory.TotalCoinValue;
+                CoinManager.Instance.AddCoins(_pendingVictoryCoins);
+                EventManager.SpinEvents.OnWheelHidden += OnWheelHiddenForVictory;
+                EventManager.SpinEvents.FireWheelHide();
                 return;
             }
 
             EventManager.ZoneEvents.FireZoneAdvanced(_zoneManager.CurrentZone);
             EventManager.SpinEvents.FireWheelChanged(GetConfigForType(_zoneManager.CurrentWheelType));
             _currentState = GameState.WaitingToSpin;
+        }
+
+        private void OnWheelHiddenForVictory()
+        {
+            EventManager.SpinEvents.OnWheelHidden -= OnWheelHiddenForVictory;
+            EventManager.GameEvents.FireVictory(_pendingVictoryCoins);
         }
 
         private void OnBombHit()
@@ -124,10 +134,11 @@ namespace VertigoSpin.Project.Scripts.Game
         private void OnCollectAndLeave()
         {
             _currentState = GameState.Collecting;
-            CoinManager.Instance.AddCoins(_inventory.TotalCoinValue);
+            int coins = _inventory.TotalCoinValue;
+            CoinManager.Instance.AddCoins(coins);
             AudioManager.Instance.PlaySound(Sound.CollectAll);
             HapticManager.Instance.PlayHaptic(HapticType.Success);
-            EventManager.GameEvents.FireVictory();
+            EventManager.GameEvents.FireVictory(coins);
         }
     }
 }
