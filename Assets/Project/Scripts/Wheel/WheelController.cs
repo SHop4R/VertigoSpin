@@ -5,8 +5,10 @@ using System.Security.Cryptography;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using VertigoSpin.Project.Scripts.Audio;
 using VertigoSpin.Project.Scripts.Data;
 using VertigoSpin.Project.Scripts.Game;
+using VertigoSpin.Project.Scripts.Haptic.Runtime;
 using VertigoSpin.Project.Scripts.Managers;
 using Random = UnityEngine.Random;
 
@@ -124,12 +126,18 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void HandleSpin()
         {
+            AudioManager.Instance.PlaySound(Sound.ButtonClick);
+            HapticManager.Instance.PlayHaptic(HapticType.Click);
+
             if (_gameController)
                 _gameController.RequestSpin();
         }
 
         private void HandleCollect()
         {
+            AudioManager.Instance.PlaySound(Sound.ButtonClick);
+            HapticManager.Instance.PlayHaptic(HapticType.Click);
+
             if (_gameController)
                 _gameController.RequestCollect();
         }

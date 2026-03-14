@@ -61,6 +61,7 @@ namespace VertigoSpin.Project.Scripts.Game
 
             _currentState = GameState.Spinning;
             AudioManager.Instance.PlaySound(Sound.WheelSpin);
+            HapticManager.Instance.PlayHaptic(HapticType.MediumImpact);
             EventManager.SpinEvents.FireSpinStarted();
         }
 
@@ -86,7 +87,6 @@ namespace VertigoSpin.Project.Scripts.Game
             EventManager.ZoneEvents.FireZoneAdvanced(_zoneManager.CurrentZone);
             EventManager.SpinEvents.FireWheelChanged(GetConfigForType(_zoneManager.CurrentWheelType));
             _currentState = GameState.WaitingToSpin;
-            AudioManager.Instance.PlaySound(Sound.RewardCollect);
         }
 
         private void OnBombHit()
@@ -100,6 +100,7 @@ namespace VertigoSpin.Project.Scripts.Game
         {
             _currentState = GameState.WaitingToSpin;
             AudioManager.Instance.PlaySound(Sound.Revive);
+            HapticManager.Instance.PlayHaptic(HapticType.Success);
             EventManager.SpinEvents.FireWheelChanged(GetConfigForType(_zoneManager.CurrentWheelType));
         }
 
@@ -107,6 +108,7 @@ namespace VertigoSpin.Project.Scripts.Game
         {
             _currentState = GameState.GameOver;
             AudioManager.Instance.PlaySound(Sound.GameOver);
+            HapticManager.Instance.PlayHaptic(HapticType.HeavyImpact);
         }
 
         private void OnGameRestart()
@@ -124,6 +126,7 @@ namespace VertigoSpin.Project.Scripts.Game
             _currentState = GameState.Collecting;
             CoinManager.Instance.AddCoins(_inventory.TotalCoinValue);
             AudioManager.Instance.PlaySound(Sound.CollectAll);
+            HapticManager.Instance.PlayHaptic(HapticType.Success);
             EventManager.GameEvents.FireVictory();
         }
     }

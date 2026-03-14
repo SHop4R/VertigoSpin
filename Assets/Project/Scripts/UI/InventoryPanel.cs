@@ -4,7 +4,9 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using VertigoSpin.Project.Scripts.Audio;
 using VertigoSpin.Project.Scripts.Data;
+using VertigoSpin.Project.Scripts.Haptic.Runtime;
 using VertigoSpin.Project.Scripts.Managers;
 
 namespace VertigoSpin.Project.Scripts.UI
@@ -88,6 +90,9 @@ namespace VertigoSpin.Project.Scripts.UI
 
             PlayFlyAnimation(reward.Icon, startWorldPos, targetWorldPos, () =>
             {
+                AudioManager.Instance.PlaySound(Sound.RewardCollect);
+                HapticManager.Instance.PlayHaptic(HapticType.LightImpact);
+
                 if (isNewSlot)
                 {
                     targetSlot.transform.DOScale(Vector3.one, PopInDuration)

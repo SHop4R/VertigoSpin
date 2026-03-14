@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using VertigoSpin.Project.Scripts.Audio;
+using VertigoSpin.Project.Scripts.Haptic.Runtime;
 using VertigoSpin.Project.Scripts.Managers;
 
 namespace VertigoSpin.Project.Scripts.UI
@@ -33,6 +35,8 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private static void HandleContinue()
         {
+            AudioManager.Instance.PlaySound(Sound.ButtonClick);
+            HapticManager.Instance.PlayHaptic(HapticType.Click);
             EventManager.GameEvents.FireGameRestart();
             UIManager.Instance.HidePanel(PanelType.Victory);
         }
