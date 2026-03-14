@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5ab2589e914f139a6decd038bfe1bf, type: 3}
   m_Name: LightImpact
   m_EditorClassIdentifier: Assembly-CSharp::Plugins.Haptic.HapticConfig
-  Mode: 1
-  DurationMs: 20
-  Amplitude: 80
-  Pattern:
+  type: 5
+  mode: 1
+  durationMs: 20
+  amplitude: 80
+  pattern:
     Timings: 00000000000000003200000000000000
     Amplitudes: 0000000096000000
     Repeat: -1

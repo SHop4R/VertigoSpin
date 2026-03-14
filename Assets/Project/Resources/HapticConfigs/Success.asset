@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5ab2589e914f139a6decd038bfe1bf, type: 3}
   m_Name: Success
   m_EditorClassIdentifier: Assembly-CSharp::Plugins.Haptic.HapticConfig
-  Mode: 2
-  DurationMs: 50
-  Amplitude: 150
-  Pattern:
+  type: 9
+  mode: 2
+  durationMs: 50
+  amplitude: 150
+  pattern:
     Timings: 00000000000000001e000000000000001e000000000000001e00000000000000
     Amplitudes: 000000007800000000000000b4000000
     Repeat: -1
