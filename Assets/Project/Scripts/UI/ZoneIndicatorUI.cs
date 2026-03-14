@@ -3,6 +3,8 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VertigoSpin.Project.Scripts.Audio;
+using VertigoSpin.Project.Scripts.Haptic.Runtime;
 using VertigoSpin.Project.Scripts.Managers;
 
 namespace VertigoSpin.Project.Scripts.UI
@@ -154,6 +156,9 @@ namespace VertigoSpin.Project.Scripts.UI
             UpdateColors(zone);
             UpdateNextSpinLabels(zone);
             ScrollToZone(zone, instant: false);
+
+            AudioManager.Instance.PlaySound(Sound.ZoneAdvance);
+            HapticManager.Instance.PlayHaptic(HapticType.LightImpact);
         }
 
         private void UpdateColors(int currentZone)
