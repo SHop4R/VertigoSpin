@@ -31,7 +31,7 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
 
                 _isInitialized = true;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
                 _isInitialized = false;
             }
