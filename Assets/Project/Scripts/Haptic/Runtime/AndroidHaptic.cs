@@ -17,9 +17,7 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
         private static void Initialize()
         {
             if (_isInitialized)
-            {
                 return;
-            }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
             try
@@ -109,7 +107,6 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
 #endif
         }
 
-        // Cancel ongoing vibration
         public static void Cancel()
         {
             Initialize();
@@ -122,7 +119,6 @@ namespace VertigoSpin.Project.Scripts.Haptic.Runtime
 #endif
         }
 
-        // Check if the device has a vibrator
         public static bool HasVibrator()
         {
             Initialize();

@@ -1,7 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
 using VertigoSpin.Project.Scripts.Utils;
-using VertigoSpin.Project.Scripts.Utils.Helpers;
 
 namespace VertigoSpin.Project.Scripts.Managers
 {

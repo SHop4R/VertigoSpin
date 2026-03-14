@@ -12,10 +12,13 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private ParticleSystem _particleSystem;
         private WheelConfig _currentConfig;
+        private Gradient _cachedGradient;
+        private GradientColorKey[] _cachedColorKeys;
 
         private void Awake()
         {
             _particleSystem = GetComponent<ParticleSystem>();
+            _cachedGradient = new Gradient();
 
             var main = _particleSystem.main;
             main.playOnAwake = false;
@@ -90,22 +93,23 @@ namespace VertigoSpin.Project.Scripts.Wheel
             }
             else
             {
-                Gradient gradient = new();
                 int keyCount = Mathf.Min(colors.Length, 8);
-                GradientColorKey[] colorKeys = new GradientColorKey[keyCount];
+
+                if (_cachedColorKeys == null || _cachedColorKeys.Length != keyCount)
+                    _cachedColorKeys = new GradientColorKey[keyCount];
 
                 for (int i = 0; i < keyCount; i++)
                 {
-                    colorKeys[i] = new GradientColorKey(colors[i], (float)i / (keyCount - 1));
+                    _cachedColorKeys[i] = new GradientColorKey(colors[i], (float)i / (keyCount - 1));
                 }
 
-                gradient.SetKeys(colorKeys, new[]
+                _cachedGradient.SetKeys(_cachedColorKeys, new[]
                 {
                     new GradientAlphaKey(1f, 0f),
                     new GradientAlphaKey(1f, 1f)
                 });
 
-                main.startColor = new ParticleSystem.MinMaxGradient(gradient);
+                main.startColor = new ParticleSystem.MinMaxGradient(_cachedGradient);
             }
         }
     }

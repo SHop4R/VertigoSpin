@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf3c2bfb0b9ae045aa1c188d729baa2, type: 3}
   m_Name: ZoneAdvance
   m_EditorClassIdentifier: 
-  soundType: 7
+  soundType: 5
   clips:
   - {fileID: 8300000, guid: 50db5e18f2328449b800268c9e6011ff, type: 3}
   pickRandom: 0

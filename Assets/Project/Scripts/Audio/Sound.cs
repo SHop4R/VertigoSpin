@@ -4,13 +4,11 @@ namespace VertigoSpin.Project.Scripts.Audio
     {
         ButtonClick = 0,
         WheelSpin = 1,
-        WheelTick = 2,
-        RewardCollect = 3,
-        BombExplode = 4,
-        Revive = 5,
-        Victory = 6,
-        ZoneAdvance = 7,
-        CollectAll = 8,
-        GameOver = 9
+        RewardCollect = 2,
+        BombExplode = 3,
+        Revive = 4,
+        ZoneAdvance = 5,
+        CollectAll = 6,
+        GameOver = 7
     }
 }

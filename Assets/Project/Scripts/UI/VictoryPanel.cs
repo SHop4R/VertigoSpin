@@ -15,10 +15,10 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private TextMeshProUGUI coinsText;
         [SerializeField] private Button continueButton;
 
-        [Header("Timing")]
-        [SerializeField] private float imageScaleDuration = 0.5f;
-        [SerializeField] private float coinShowDelay = 0.5f;
-        [SerializeField] private float coinCountDuration = 0.6f;
+        private const float ImageScaleDuration = 0.5f;
+        private const float CoinShowDelay = 0.5f;
+        private const float CoinCountDuration = 0.6f;
+        private const float ElementScaleInDuration = 0.3f;
 
         private int _pendingCoins;
         private Sequence _animSequence;
@@ -69,7 +69,7 @@ namespace VertigoSpin.Project.Scripts.UI
             if (victoryImage)
             {
                 _animSequence.Append(
-                    victoryImage.transform.DOScaleY(1f, imageScaleDuration)
+                    victoryImage.transform.DOScaleY(1f, ImageScaleDuration)
                         .SetEase(Ease.OutBack));
             }
 
@@ -80,20 +80,20 @@ namespace VertigoSpin.Project.Scripts.UI
             _animSequence.AppendCallback(() =>
             {
                 if (coinsText)
-                    coinsText.text = startCoins.ToString();
+                    coinsText.SetText("{0}", startCoins);
             });
 
-            _animSequence.AppendInterval(coinShowDelay);
+            _animSequence.AppendInterval(CoinShowDelay);
 
             if (coinsText)
             {
                 _animSequence.Append(
-                    coinsText.transform.DOScale(1f, 0.3f)
+                    coinsText.transform.DOScale(1f, ElementScaleInDuration)
                         .SetEase(Ease.OutBack));
             }
 
             // Wait after scale-in before counting
-            _animSequence.AppendInterval(coinShowDelay);
+            _animSequence.AppendInterval(CoinShowDelay);
 
             // Step 3: Count up from previous coins to new total, sync inventory clear
             _animSequence.AppendCallback(() => EventManager.GameEvents.FireVictoryCollect());
@@ -101,7 +101,7 @@ namespace VertigoSpin.Project.Scripts.UI
             if (coinsText && _pendingCoins > 0)
             {
                 _animSequence.Append(
-                    coinsText.DOCounter(startCoins, totalCoins, coinCountDuration, false)
+                    coinsText.DOCounter(startCoins, totalCoins, CoinCountDuration, false)
                         .SetEase(Ease.OutQuad));
 
                 _animSequence.AppendCallback(() =>
@@ -115,7 +115,7 @@ namespace VertigoSpin.Project.Scripts.UI
             if (continueButton)
             {
                 _animSequence.Append(
-                    continueButton.transform.DOScale(1f, 0.3f)
+                    continueButton.transform.DOScale(1f, ElementScaleInDuration)
                         .SetEase(Ease.OutBack));
             }
         }

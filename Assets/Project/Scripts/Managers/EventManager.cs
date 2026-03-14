@@ -56,10 +56,8 @@ namespace VertigoSpin.Project.Scripts.Managers
         public static class ZoneEvents
         {
             public static event Action<int> OnZoneAdvanced;
-            public static event Action<int, WheelType> OnZoneInfoUpdated;
 
             public static void FireZoneAdvanced(int zone) => OnZoneAdvanced?.Invoke(zone);
-            public static void FireZoneInfoUpdated(int zone, WheelType type) => OnZoneInfoUpdated?.Invoke(zone, type);
         }
     }
 }

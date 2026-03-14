@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 
 namespace VertigoSpin.Project.Scripts.Pooling
 {
-    public class Pool<T> where T : Component
+    public sealed class Pool<T> where T : Component
     {
         private readonly IObjectPool<T> _pool;
         private readonly T _prefab;
@@ -79,22 +79,11 @@ namespace VertigoSpin.Project.Scripts.Pooling
             }
         }
 
-        public T Spawn() => _pool.Get();
+        public T Spawn() => _pool != null ? _pool.Get() : default;
 
-        public T Spawn(Vector3 position)
+        public void Return(T obj)
         {
-            T obj = _pool.Get();
-            obj.transform.position = position;
-            return obj;
+            if (_pool != null) _pool.Release(obj);
         }
-
-        public T Spawn(Vector3 position, Quaternion rotation)
-        {
-            T obj = _pool.Get();
-            obj.transform.SetPositionAndRotation(position, rotation);
-            return obj;
-        }
-
-        public void Return(T obj) => _pool.Release(obj);
     }
 }

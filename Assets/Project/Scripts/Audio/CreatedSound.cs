@@ -11,11 +11,11 @@ namespace VertigoSpin.Project.Scripts.Audio
     {
         private readonly AudioSource _source;
         private readonly SoundData _data;
-                    
+
         private readonly float _initialPitch;
-                    
+
         private Tween _resetTween;
-            
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CreatedSound"/> class with the specified sound data.
         /// </summary>
@@ -23,15 +23,15 @@ namespace VertigoSpin.Project.Scripts.Audio
         public CreatedSound(SoundData soundData)
         {
             _data = soundData;
-                        
+
             GameObject obj = new(_data.soundType.ToString());
             obj.transform.SetParent(AudioManager.Instance.transform);
             _source = obj.AddComponent<AudioSource>();
-                        
+
             ApplySoundData(_source, _data);
             _initialPitch = _source.pitch;
         }
-                    
+
         /// <summary>
         /// Plays the sound, optionally changing and resetting the pitch.
         /// Pitch change is applied AFTER playing, so it affects the next playback.
@@ -42,15 +42,15 @@ namespace VertigoSpin.Project.Scripts.Audio
         {
             if (resetPitch)
                 ResetPitch();
-            
+
             _source.Play();
-            
-            if (changePitch) 
+
+            if (changePitch)
                 ChangePitch();
-            
+
             StartPitchResetTimer();
         }
-        
+
         /// <summary>
         /// Stops the sound, optionally resetting the pitch.
         /// </summary>
@@ -59,10 +59,10 @@ namespace VertigoSpin.Project.Scripts.Audio
         {
             if (resetPitch)
                 ResetPitch();
-                        
+
             _source.Stop();
         }
-                    
+
         /// <summary>
         /// Changes the pitch of the sound based on the <see cref="SoundData"/>.
         /// </summary>
@@ -71,7 +71,7 @@ namespace VertigoSpin.Project.Scripts.Audio
             float changed = _source.pitch + _data.PitchChange;
             _source.pitch = Mathf.Clamp(changed, _data.MinPitch, _data.MaxPitch);
         }
-                    
+
         /// <summary>
         /// Resets the pitch of the sound immediately.
         /// </summary>
@@ -79,11 +79,11 @@ namespace VertigoSpin.Project.Scripts.Audio
         {
             _resetTween?.Kill();
             _resetTween = null;
-                        
+
             if (_source)
                 _source.pitch = _initialPitch;
         }
-        
+
         private void StartPitchResetTimer()
         {
             if (_resetTween != null)
@@ -91,10 +91,10 @@ namespace VertigoSpin.Project.Scripts.Audio
                 _resetTween.Restart();
                 return;
             }
-                        
+
             _resetTween = DOVirtual.DelayedCall(_data.ResetTimer, ResetPitch);
         }
-        
+
         private static void ApplySoundData(AudioSource source, SoundData data)
         {
             source.loop = data.Loop;

@@ -17,8 +17,7 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private TextMeshProUGUI coinValueText;
         [SerializeField] private Transform popupRoot;
 
-        [Header("Settings")]
-        [SerializeField] private float displayDuration = 1.5f;
+        private const float DisplayDuration = 1.5f;
 
         private Coroutine _hideCoroutine;
 
@@ -43,15 +42,15 @@ namespace VertigoSpin.Project.Scripts.UI
                 rewardIcon.sprite = reward.Icon;
 
             if (rewardNameText)
-                rewardNameText.text = reward.RewardName;
+                rewardNameText.SetText(reward.RewardName);
 
             if (coinValueText)
-                coinValueText.text = reward.CoinValue.ToString();
+                coinValueText.SetText("{0}", reward.CoinValue);
         }
 
         private IEnumerator HideAfterDelay()
         {
-            yield return WaitHelper.WaitForSeconds(displayDuration);
+            yield return WaitHelper.WaitForSeconds(DisplayDuration);
 
             if (popupRoot)
                 ItemAnimator.DisableAnim(popupRoot);

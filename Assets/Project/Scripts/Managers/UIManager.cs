@@ -18,10 +18,10 @@ namespace VertigoSpin.Project.Scripts.Managers
 
         private void Awake()
         {
-            _victoryPanel = panels
-                .FirstOrDefault(panel => panel.PanelType == PanelType.Victory)
-                .PanelObject
-                .GetComponent<VictoryPanel>();
+            Panel victoryEntry = panels.FirstOrDefault(panel => panel.PanelType == PanelType.Victory);
+
+            if (victoryEntry.PanelObject)
+                _victoryPanel = victoryEntry.PanelObject.GetComponent<VictoryPanel>();
         }
 
         private void OnEnable()

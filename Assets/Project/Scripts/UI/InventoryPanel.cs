@@ -35,7 +35,6 @@ namespace VertigoSpin.Project.Scripts.UI
         private const float FlyPopScale = 3f;
         private const float FlyPopDuration = 0.15f;
         private const float FlyEndScale = 0.3f;
-        private const float FlyIconSize = 100f;
         private const float FlyArcHeight = 300f;
 
         private void Start()
@@ -220,7 +219,7 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             if (!totalCoinText) return;
 
-            totalCoinText.text = _totalCoins.ToString();
+            totalCoinText.SetText("{0}", _totalCoins);
 
             if (animate && _totalCoins > 0)
                 UIManager.TextAnimation(totalCoinText);

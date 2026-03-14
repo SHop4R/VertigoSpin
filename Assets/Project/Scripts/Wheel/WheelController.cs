@@ -53,6 +53,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
         private const float SlideInDuration = 0.6f;
         private const float SlideInOffset = 800f;
 
+
         private void Awake()
         {
             _gameController = FindObjectOfType<SpinGameController>();
@@ -314,7 +315,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
                     .DOScale(WindUpScale, WindUpDuration)
                     .SetEase(Ease.InOutSine));
 
-            spinSequence.AppendCallback(() => EventManager.SpinEvents.FireWheelSpinning());
+            spinSequence.AppendCallback(EventManager.SpinEvents.FireWheelSpinning);
 
             spinSequence.Append(
                 wheelTransform
@@ -338,7 +339,7 @@ namespace VertigoSpin.Project.Scripts.Wheel
             _selectedSliceIndex = sliceIndex;
 
             wheelTransform
-                .DORotate(new(0f, 0f, nearestAngle), SnapDuration, RotateMode.Fast)
+                .DORotate(new(0f, 0f, nearestAngle), SnapDuration)
                 .SetEase(Ease.OutBack)
                 .OnComplete(OnSpinComplete);
         }

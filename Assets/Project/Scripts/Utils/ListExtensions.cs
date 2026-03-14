@@ -7,7 +7,7 @@ namespace VertigoSpin.Project.Scripts.Utils
     /// A static class that provides extension methods for <see cref="List{T}"/>'s.
     /// </summary>
     public static class ListExtensions
-    { 
+    {
         /// <summary>
         /// Shuffles the elements of the <see cref="List{T}"/> in place using the Fisher-Yates algorithm.
         /// </summary>

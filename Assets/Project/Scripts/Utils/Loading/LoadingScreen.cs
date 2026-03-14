@@ -13,7 +13,7 @@ namespace VertigoSpin.Project.Scripts.Utils.Loading
         
         private CanvasGroup _loadingCanvasGroup;
 
-        private List<ILoadingStep> _steps = new();
+        private readonly List<ILoadingStep> _steps = new();
         
         private int _currentStepIndex;
         private float _startTime;
@@ -30,10 +30,7 @@ namespace VertigoSpin.Project.Scripts.Utils.Loading
             _loadingCanvasGroup.alpha = 1f;
             loadingBar.fillAmount = 0f;
             
-            _steps = new()
-            {
-                new SceneLoadingStep()
-            };
+            _steps.Add(new SceneLoadingStep());
             
             DontDestroyOnLoad(gameObject);
         }
@@ -50,7 +47,7 @@ namespace VertigoSpin.Project.Scripts.Utils.Loading
             loadingBar?.DOKill();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (_isFinalizing) return;
 

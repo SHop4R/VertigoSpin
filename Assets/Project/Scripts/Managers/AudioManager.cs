@@ -31,10 +31,9 @@ namespace VertigoSpin.Project.Scripts.Managers
         /// <param name="resetPitch">If <c>true</c>, resets the pitch of the sound before playing.</param>
         public void PlaySound(Sound soundType, bool changePitch = false, bool resetPitch = false)
         {
-            if (TryGetSound(soundType, out CreatedSound sound)) 
+            if (TryGetSound(soundType, out CreatedSound sound))
                 sound.Play(changePitch, resetPitch);
         }
-        
 
         /// <summary>
         /// Stops the playback of a sound of the specified type.
@@ -56,20 +55,20 @@ namespace VertigoSpin.Project.Scripts.Managers
             if (TryGetSound(soundType, out CreatedSound sound))
                 sound.ResetPitch();
         }
-        
+
         private bool TryGetSound(Sound soundType, out CreatedSound sound)
         {
             sound = null;
-            
+
             if (AudioListener.pause) return false;
             return _createdSounds.Count != 0 && _createdSounds.TryGetValue(soundType, out sound);
         }
-        
+
         /// <summary>
         /// Toggles the <see cref="AudioListener"/>'s pause state.
         /// </summary>
         /// <param name="value">If <c>true</c>, unpauses the audio; otherwise, pauses the audio.</param>
-        public static void ToggleAudio(bool value) 
+        public static void ToggleAudio(bool value)
             => AudioListener.pause = !value;
     }
 }

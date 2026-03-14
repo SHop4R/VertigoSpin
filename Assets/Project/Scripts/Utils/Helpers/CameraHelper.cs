@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace VertigoSpin.Project.Scripts.Utils.Helpers
 {
@@ -8,7 +8,7 @@ namespace VertigoSpin.Project.Scripts.Utils.Helpers
     public static class CameraHelper
     {
         private static Camera _camera;
-        
+
         /// <summary>
         /// Gets the main <see cref="Camera"/> in the scene. If the main <see cref="Camera"/> is not already cached, it caches it.
         /// </summary>
@@ -18,7 +18,7 @@ namespace VertigoSpin.Project.Scripts.Utils.Helpers
             {
                 if (!_camera)
                     _camera = Camera.main;
-        
+
                 return _camera;
             }
         }

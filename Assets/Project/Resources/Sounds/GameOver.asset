@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf3c2bfb0b9ae045aa1c188d729baa2, type: 3}
   m_Name: GameOver
   m_EditorClassIdentifier: 
-  soundType: 9
+  soundType: 7
   clips:
   - {fileID: 8300000, guid: be04179e82e6d424fbb95e19bbdfeb59, type: 3}
   pickRandom: 0

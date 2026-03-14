@@ -14,9 +14,8 @@ namespace VertigoSpin.Project.Scripts.Game
         private ZoneManager _zoneManager;
         private InventoryManager _inventory;
         private GameState _currentState;
-        private int _pendingVictoryCoins;
 
-        private void Start()
+        private void Awake()
         {
             foreach (WheelConfig config in Resources.LoadAll<WheelConfig>("Wheels"))
             {
@@ -26,7 +25,10 @@ namespace VertigoSpin.Project.Scripts.Game
             _zoneManager = new();
             _inventory = new();
             _currentState = GameState.WaitingToSpin;
+        }
 
+        private void Start()
+        {
             EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[WheelType.Bronze]);
             EventManager.ZoneEvents.FireZoneAdvanced(1);
         }
@@ -76,9 +78,16 @@ namespace VertigoSpin.Project.Scripts.Game
             if (_zoneManager.IsLastZone)
             {
                 _currentState = GameState.GameOver;
-                _pendingVictoryCoins = _inventory.TotalCoinValue;
-                CoinManager.Instance.AddCoins(_pendingVictoryCoins);
-                EventManager.SpinEvents.OnWheelHidden += OnWheelHiddenForVictory;
+                int coins = _inventory.TotalCoinValue;
+                CoinManager.Instance.AddCoins(coins);
+
+                void OnHidden()
+                {
+                    EventManager.SpinEvents.OnWheelHidden -= OnHidden;
+                    EventManager.GameEvents.FireVictory(coins);
+                }
+
+                EventManager.SpinEvents.OnWheelHidden += OnHidden;
                 EventManager.SpinEvents.FireWheelHide();
                 return;
             }
@@ -86,12 +95,6 @@ namespace VertigoSpin.Project.Scripts.Game
             EventManager.ZoneEvents.FireZoneAdvanced(_zoneManager.CurrentZone);
             EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[_zoneManager.CurrentWheelType]);
             _currentState = GameState.WaitingToSpin;
-        }
-
-        private void OnWheelHiddenForVictory()
-        {
-            EventManager.SpinEvents.OnWheelHidden -= OnWheelHiddenForVictory;
-            EventManager.GameEvents.FireVictory(_pendingVictoryCoins);
         }
 
         private void OnBombHit()
@@ -128,7 +131,7 @@ namespace VertigoSpin.Project.Scripts.Game
 
         private void OnCollectAndLeave()
         {
-            _currentState = GameState.Collecting;
+            _currentState = GameState.GameOver;
             int coins = _inventory.TotalCoinValue;
             CoinManager.Instance.AddCoins(coins);
             AudioManager.Instance.PlaySound(Sound.CollectAll);

@@ -10,17 +10,17 @@ namespace VertigoSpin.Project.Scripts.Animations
     public sealed class ItemAnimator : MonoBehaviour
     {
         [Header("Settings")]
-        [SerializeField, Tooltip("Duration of the animation in seconds")] 
+        [SerializeField, Tooltip("Duration of the animation in seconds")]
         private float duration = 0.5f;
-        
-        [SerializeField, Tooltip("Easing function for the animation")] 
+
+        [SerializeField, Tooltip("Easing function for the animation")]
         private Ease ease = Ease.OutBack;
 
-        [Header("Events"), Tooltip("Event triggered when the item is opened")] 
+        [Header("Events"), Tooltip("Event triggered when the item is opened")]
         public UnityEvent onOpen;
-        
+
         private Vector3 _scale;
-        
+
         private void Awake() => _scale = transform.localScale;
 
         private void OnEnable()
@@ -43,7 +43,7 @@ namespace VertigoSpin.Project.Scripts.Animations
         public static Tween EnableAnim(Transform obj, float duration = 0.5f, Ease ease = Ease.OutBack)
         {
             Vector3 scale = obj.localScale;
-            
+
             obj.localScale = Vector3.zero;
             obj.gameObject.SetActive(true);
 
@@ -63,7 +63,7 @@ namespace VertigoSpin.Project.Scripts.Animations
         public static Tween DisableAnim(Transform obj, float duration = 0.5f, Ease ease = Ease.InBack)
         {
             Vector3 scale = obj.localScale;
-            
+
             return obj.DOScale(Vector3.zero, duration)
                 .SetEase(ease, 1.35f)
                 .SetLink(obj.gameObject)

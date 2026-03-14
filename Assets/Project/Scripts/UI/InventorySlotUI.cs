@@ -30,8 +30,8 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             _count = 0;
             if (_iconImage) _iconImage.sprite = null;
-            if (nameText) nameText.text = "";
-            if (countText) countText.text = "";
+            if (nameText) nameText.SetText(string.Empty);
+            if (countText) countText.SetText(string.Empty);
         }
 
         public void Setup(RewardData reward)
@@ -44,7 +44,7 @@ namespace VertigoSpin.Project.Scripts.UI
                 _iconImage.sprite = reward.Icon;
 
             if (nameText)
-                nameText.text = reward.RewardName;
+                nameText.SetText(reward.RewardName);
 
             UpdateCountText();
         }
@@ -61,7 +61,7 @@ namespace VertigoSpin.Project.Scripts.UI
         private void UpdateCountText()
         {
             if (countText)
-                countText.text = $"x{_count}";
+                countText.SetText("x{0}", _count);
         }
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cf3c2bfb0b9ae045aa1c188d729baa2, type: 3}
   m_Name: BombExplode
   m_EditorClassIdentifier: 
-  soundType: 4
+  soundType: 3
   clips:
   - {fileID: 8300000, guid: 78b63c09717754fd5ae80f65775719ae, type: 3}
   pickRandom: 0

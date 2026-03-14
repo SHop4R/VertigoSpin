@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VertigoSpin.Project.Scripts.Utils.Helpers
@@ -30,11 +30,13 @@ namespace VertigoSpin.Project.Scripts.Utils.Helpers
         /// <returns>A <see cref="UnityEngine.WaitForSeconds"/> object for the specified number of seconds.</returns>
         public static WaitForSeconds WaitForSeconds(float seconds)
         {
-            if (!WaitDictionary.ContainsKey(seconds))
-                WaitDictionary.Add(seconds, new(seconds));
-    
-            return WaitDictionary[seconds];
+            if (!WaitDictionary.TryGetValue(seconds, out WaitForSeconds wait))
+            {
+                wait = new WaitForSeconds(seconds);
+                WaitDictionary[seconds] = wait;
+            }
+
+            return wait;
         }
     }
 }
-

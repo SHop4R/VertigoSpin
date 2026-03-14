@@ -50,10 +50,10 @@ namespace VertigoSpin.Project.Scripts.UI
                 GiveUpButton.interactable = true;
 
             if (reviveCostText)
-                reviveCostText.text = $"Revive {cost}";
+                reviveCostText.SetText("Revive {0}", cost);
 
             if (playerCoinsText)
-                playerCoinsText.text = CoinManager.Instance.Coins.ToString();
+                playerCoinsText.SetText("{0}", CoinManager.Instance.Coins);
         }
 
         private const float DialDownDuration = 0.6f;
