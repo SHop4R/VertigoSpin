@@ -59,14 +59,14 @@ namespace VertigoSpin.Project.Scripts.UI
         {
             EventManager.RewardEvents.OnRewardFlyStarted += HandleRewardFlyStarted;
             EventManager.GameEvents.OnGameOver += HandleReset;
-            EventManager.GameEvents.OnVictory += HandleReset;
+            EventManager.GameEvents.OnVictoryCollect += HandleVictoryReset;
         }
 
         private void OnDisable()
         {
             EventManager.RewardEvents.OnRewardFlyStarted -= HandleRewardFlyStarted;
             EventManager.GameEvents.OnGameOver -= HandleReset;
-            EventManager.GameEvents.OnVictory -= HandleReset;
+            EventManager.GameEvents.OnVictoryCollect -= HandleVictoryReset;
         }
 
         private void HandleRewardFlyStarted(RewardData reward, Vector3 startWorldPos)
@@ -176,7 +176,15 @@ namespace VertigoSpin.Project.Scripts.UI
             AnimatedClear();
         }
 
-        private void AnimatedClear()
+        private void HandleVictoryReset()
+        {
+            if (_isClearing) return;
+            _isClearing = true;
+
+            AnimatedClear(fireRestart: false);
+        }
+
+        private void AnimatedClear(bool fireRestart = true)
         {
             Sequence clearSeq = DOTween.Sequence();
 
@@ -209,7 +217,8 @@ namespace VertigoSpin.Project.Scripts.UI
                 UpdateTotalText(false);
                 _isClearing = false;
 
-                EventManager.GameEvents.FireGameRestart();
+                if (fireRestart)
+                    EventManager.GameEvents.FireGameRestart();
             });
         }
 

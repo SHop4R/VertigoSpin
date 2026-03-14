@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -12,6 +13,16 @@ namespace VertigoSpin.Project.Scripts.Managers
     {
         [SerializeField] private List<Panel> panels = new();
         [field: SerializeField] public Canvas Canvas{ get; private set; }
+        
+        private VictoryPanel _victoryPanel;
+
+        private void Awake()
+        {
+            _victoryPanel = panels
+                .FirstOrDefault(panel => panel.PanelType == PanelType.Victory)
+                .PanelObject
+                .GetComponent<VictoryPanel>();
+        }
 
         private void OnEnable()
         {
@@ -73,6 +84,13 @@ namespace VertigoSpin.Project.Scripts.Managers
         }
 
         private void HandleBombHit() => ShowPanel(PanelType.Revive);
-        private void HandleVictory() => ShowPanel(PanelType.Victory);
+
+        private void HandleVictory(int coins)
+        {
+            ShowPanel(PanelType.Victory);
+
+            if (_victoryPanel)
+                _victoryPanel.Show(coins);
+        }
     }
 }
