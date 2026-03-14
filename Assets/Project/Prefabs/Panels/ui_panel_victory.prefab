@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1356626803224656584}
   - component: {fileID: 6824831993225642498}
   - component: {fileID: 4617389942751337856}
-  - component: {fileID: 9212598174311732784}
   m_Layer: 0
   m_Name: ui_text_player_coins_value
   m_TagString: Untagged
@@ -137,23 +136,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &9212598174311732784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2316714747097345456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1998203cd644346bf0ff4e8cdd0eac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  duration: 0.5
-  ease: 27
-  onOpen:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &3340725759817542892
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +147,6 @@ GameObject:
   - component: {fileID: 8792409482068461344}
   - component: {fileID: 3549755328780129762}
   - component: {fileID: 6803327161909544040}
-  - component: {fileID: 9138493818081715138}
   m_Layer: 0
   m_Name: ui_image_victory
   m_TagString: Untagged
@@ -232,23 +213,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9138493818081715138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3340725759817542892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1998203cd644346bf0ff4e8cdd0eac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  duration: 0.5
-  ease: 27
-  onOpen:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &3755615099911592730
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,7 +301,6 @@ GameObject:
   - component: {fileID: 6164341852934734787}
   - component: {fileID: 6164341852934734784}
   - component: {fileID: 6164341852934734785}
-  - component: {fileID: 3629348537679687451}
   m_Layer: 0
   m_Name: ui_button_victory_continue
   m_TagString: Untagged
@@ -446,23 +409,6 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6164341852934734784}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &3629348537679687451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6164341852934734791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1998203cd644346bf0ff4e8cdd0eac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  duration: 0.5
-  ease: 27
-  onOpen:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &6164341853232533136
@@ -747,7 +693,6 @@ GameObject:
   - component: {fileID: 1069100156}
   - component: {fileID: 1069100155}
   - component: {fileID: 1069100154}
-  - component: {fileID: 6746014109459651980}
   m_Layer: 0
   m_Name: ui_panel_victory
   m_TagString: Untagged
@@ -830,25 +775,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28745a0dadd474845aadd8ac5167dcf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  continueButton: {fileID: 6164341852934734785}
+  victoryImage: {fileID: 6803327161909544040}
   coinsText: {fileID: 4617389942751337856}
---- !u!114 &6746014109459651980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6164341853565597693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e74fb181878476f43bd077a25b501546, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  panelElements:
-  - {fileID: 3340725759817542892}
-  - {fileID: 2316714747097345456}
-  - {fileID: 6164341852934734791}
-  animationDelay: 0.3
+  continueButton: {fileID: 6164341852934734785}
+  imageScaleDuration: 0.5
+  coinShowDelay: 0.5
+  coinCountDuration: 0.6
 --- !u!1 &6431436480104799090
 GameObject:
   m_ObjectHideFlags: 0

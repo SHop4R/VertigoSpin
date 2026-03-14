@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundType: 1
   clips:
-  - {fileID: 8300000, guid: 79ac7ce3102f347a7b5961e3cbce92b6, type: 3}
+  - {fileID: 8300000, guid: 0be79e80965e54d779e5188038128c68, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0
