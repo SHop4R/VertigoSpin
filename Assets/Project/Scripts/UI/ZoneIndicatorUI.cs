@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -33,8 +32,14 @@ namespace VertigoSpin.Project.Scripts.UI
         private const float SlideInDuration = 0.6f;
         private const float SlideInOffset = 1200f;
 
-        private readonly List<RectTransform> _cards = new();
-        private readonly List<TextMeshProUGUI> _cardTexts = new();
+        private const float CardWidth = 240f;
+        private const float CardSpacing = 10f;
+        private const float CardStride = CardWidth + CardSpacing;
+        private const int VisibleBuffer = 5;
+
+        private readonly Dictionary<int, RectTransform> _activeCards = new();
+        private readonly Dictionary<int, TextMeshProUGUI> _activeCardTexts = new();
+        private int _currentZone = 1;
         private int _totalZones;
         private RectTransform _viewportRect;
         private RectTransform _containerRect;
@@ -44,7 +49,6 @@ namespace VertigoSpin.Project.Scripts.UI
             _viewportRect = transform as RectTransform;
             _containerRect = cardContainer as RectTransform;
 
-            EnsureMask();
             SetupContainer();
         }
 
@@ -61,44 +65,92 @@ namespace VertigoSpin.Project.Scripts.UI
         private void Initialize(int totalZones = MaxZone)
         {
             _totalZones = totalZones;
-            ClearCards();
-            CreateCards();
+            _currentZone = 1;
+            ReturnAllCards();
+            ReconcileActiveCards(1);
             UpdateColors(1);
             UpdateNextSpinLabels(1, animate: false);
             ScrollToZone(1, instant: true);
         }
 
-        private void CreateCards()
+        private (int min, int max) GetVisibleRange(int centerZone)
+        {
+            int min = Mathf.Max(1, centerZone - VisibleBuffer);
+            int max = Mathf.Min(_totalZones, centerZone + VisibleBuffer);
+            return (min, max);
+        }
+
+        private void ReconcileActiveCards(int centerZone)
         {
             if (!cardContainer) return;
 
-            for (int i = 0; i < _totalZones; i++)
-            {
-                RectTransform card = PoolManager.Instance.SpawnZoneCard(cardContainer);
-                TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
-                int zone = i + 1;
+            (int rangeMin, int rangeMax) = GetVisibleRange(centerZone);
 
+            // Return cards outside the new visible range
+            List<int> toRemove = new();
+            foreach (int zone in _activeCards.Keys)
+            {
+                if (zone < rangeMin || zone > rangeMax)
+                    toRemove.Add(zone);
+            }
+
+            foreach (int zone in toRemove)
+            {
+                PoolManager.Instance.ReturnZoneCard(_activeCards[zone]);
+                _activeCards.Remove(zone);
+                _activeCardTexts.Remove(zone);
+            }
+
+            // Spawn cards inside the range that don't exist yet
+            for (int zone = rangeMin; zone <= rangeMax; zone++)
+            {
+                if (_activeCards.ContainsKey(zone)) continue;
+
+                RectTransform card = PoolManager.Instance.SpawnZoneCard(cardContainer);
+                if (!card) continue;
+
+                card.localScale = Vector3.one;
+                card.anchorMin = new(0f, 0.5f);
+                card.anchorMax = new(0f, 0.5f);
+                card.anchoredPosition = new((zone - 1) * CardStride + CardWidth / 2f, 0f);
+
+                TextMeshProUGUI tmp = card.GetComponentInChildren<TextMeshProUGUI>();
                 if (tmp)
                     tmp.text = zone.ToString();
 
-                _cards.Add(card);
-                _cardTexts.Add(tmp);
+                _activeCards[zone] = card;
+                _activeCardTexts[zone] = tmp;
             }
         }
 
-        private void ClearCards()
+        private void ReturnAllCards()
         {
-            foreach (RectTransform card in _cards.Where(card => card))
+            foreach (RectTransform card in _activeCards.Values)
             {
-                PoolManager.Instance.ReturnZoneCard(card);
+                if (card)
+                    PoolManager.Instance.ReturnZoneCard(card);
             }
-            
-            _cards.Clear();
-            _cardTexts.Clear();
+
+            _activeCards.Clear();
+            _activeCardTexts.Clear();
         }
 
         private void HandleZoneAdvanced(int zone)
         {
+            bool isRestart = zone < _currentZone;
+            _currentZone = zone;
+
+            if (isRestart)
+            {
+                ReturnAllCards();
+                ReconcileActiveCards(zone);
+                UpdateColors(zone);
+                UpdateNextSpinLabels(zone);
+                ScrollToZone(zone, instant: false);
+                return;
+            }
+
+            ReconcileActiveCards(zone);
             UpdateColors(zone);
             UpdateNextSpinLabels(zone);
             ScrollToZone(zone, instant: false);
@@ -106,30 +158,25 @@ namespace VertigoSpin.Project.Scripts.UI
 
         private void UpdateColors(int currentZone)
         {
-            for (int i = 0; i < _cards.Count; i++)
+            foreach (KeyValuePair<int, TextMeshProUGUI> kvp in _activeCardTexts)
             {
-                SetCardColor(i, i + 1, currentZone);
+                SetCardColor(kvp.Value, kvp.Key, currentZone);
             }
         }
 
-        private void ScrollToZone(int currentZone, bool instant)
+        private void ScrollToZone(int zone, bool instant)
         {
             if (!_containerRect || !_viewportRect) return;
+            if (zone < 1 || zone > _totalZones) return;
 
-            int cardIndex = currentZone - 1;
-            if (cardIndex < 0 || cardIndex >= _cards.Count) return;
-
-            Canvas.ForceUpdateCanvases();
-
-            RectTransform cardRect = _cards[cardIndex];
-            if (!cardRect) return;
-
-            Vector3 cardWorldPos = cardRect.position;
-            Vector3 cardInViewport = _viewportRect.InverseTransformPoint(cardWorldPos);
-            float targetX = _containerRect.anchoredPosition.x - cardInViewport.x;
+            float cardCenterX = (zone - 1) * CardStride + CardWidth / 2f;
+            float viewportWidth = _viewportRect.rect.width;
+            float targetX = -(cardCenterX - viewportWidth / 2f) - 15f;
 
             if (instant)
+            {
                 _containerRect.anchoredPosition = new(targetX, _containerRect.anchoredPosition.y);
+            }
             else
             {
                 _containerRect.DOKill();
@@ -166,12 +213,6 @@ namespace VertigoSpin.Project.Scripts.UI
                 .SetEase(Ease.OutCubic);
         }
 
-        private void EnsureMask()
-        {
-            if (!GetComponent<RectMask2D>())
-                gameObject.AddComponent<RectMask2D>();
-        }
-
         private void SetupContainer()
         {
             if (!_containerRect) return;
@@ -180,24 +221,18 @@ namespace VertigoSpin.Project.Scripts.UI
             _containerRect.anchorMax = new(0f, 0.5f);
             _containerRect.pivot = new(0f, 0.5f);
 
-            ContentSizeFitter fitter = _containerRect.GetComponent<ContentSizeFitter>();
-            
-            if (!fitter)
-                fitter = _containerRect.gameObject.AddComponent<ContentSizeFitter>();
-            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-
-            _containerRect.sizeDelta = new(0f, _viewportRect.rect.height);
-
+            // Disable layout components — manual positioning handles everything
             HorizontalLayoutGroup layout = _containerRect.GetComponent<HorizontalLayoutGroup>();
-            
-            if (!layout) return;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
-            layout.spacing = 10f;
-            layout.childAlignment = TextAnchor.MiddleLeft;
+            if (layout)
+                layout.enabled = false;
+
+            ContentSizeFitter fitter = _containerRect.GetComponent<ContentSizeFitter>();
+            if (fitter)
+                fitter.enabled = false;
+
+            // Set container size manually
+            float containerWidth = MaxZone * CardStride - CardSpacing;
+            _containerRect.sizeDelta = new(containerWidth, _viewportRect.rect.height);
         }
 
         private void UpdateNextSpinLabels(int currentZone, bool animate = true)
@@ -207,10 +242,10 @@ namespace VertigoSpin.Project.Scripts.UI
 
             if (nextSilverText)
             {
-                string silverValue = nextSilver > 0 
-                    ? $"NEXT SILVER: {nextSilver}" 
+                string silverValue = nextSilver > 0
+                    ? $"NEXT SILVER: {nextSilver}"
                     : string.Empty;
-                
+
                 if (nextSilverText.text != silverValue)
                 {
                     nextSilverText.text = silverValue;
@@ -220,14 +255,14 @@ namespace VertigoSpin.Project.Scripts.UI
             }
 
             if (!nextGoldText) return;
-            
-            string goldValue = nextGold > 0 
-                ? $"NEXT GOLD: {nextGold}" 
+
+            string goldValue = nextGold > 0
+                ? $"NEXT GOLD: {nextGold}"
                 : string.Empty;
-            
+
             if (nextGoldText.text == goldValue) return;
             nextGoldText.text = goldValue;
-            
+
             if (animate && goldValue.Length > 0)
                 UIManager.TextAnimation(nextGoldText);
         }
@@ -238,9 +273,8 @@ namespace VertigoSpin.Project.Scripts.UI
             return next <= _totalZones ? next : 0;
         }
 
-        private void SetCardColor(int cardIndex, int zone, int currentZone)
+        private void SetCardColor(TextMeshProUGUI tmp, int zone, int currentZone)
         {
-            TextMeshProUGUI tmp = _cardTexts[cardIndex];
             if (!tmp) return;
 
             if (zone == currentZone)
@@ -254,9 +288,9 @@ namespace VertigoSpin.Project.Scripts.UI
         private Color GetZoneTextColor(int zone)
         {
             if (zone % SuperZoneInterval == 0) return superTextColor;
-            
-            return zone % SafeZoneInterval == 0 
-                ? safeTextColor 
+
+            return zone % SafeZoneInterval == 0
+                ? safeTextColor
                 : normalTextColor;
         }
     }
