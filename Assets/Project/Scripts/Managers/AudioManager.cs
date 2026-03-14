@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using VertigoSpin.Project.Scripts.Audio;
 using VertigoSpin.Project.Scripts.Utils;
@@ -14,22 +13,13 @@ namespace VertigoSpin.Project.Scripts.Managers
     /// </remarks>
     public sealed class AudioManager : MonoSingleton<AudioManager>
     {
-        [Header("Sound Data"), Tooltip("The list of sound data")]
-        [SerializeField] private List<SoundData> soundData = new();
-        
         private readonly Dictionary<Sound, CreatedSound> _createdSounds = new();
-        
+
         private void Awake()
         {
-            SoundData[] soundDataArray = Resources.LoadAll<SoundData>("Sounds");
-            soundData.AddRange(soundDataArray);
-
-            IEnumerable<SoundData> soundDatum = soundData
-                .Where(data => !_createdSounds.ContainsKey(data.soundType));
-
-            foreach (SoundData data in soundDatum)
+            foreach (SoundData data in Resources.LoadAll<SoundData>("Sounds"))
             {
-                _createdSounds.Add(data.soundType, new(data));
+                _createdSounds.TryAdd(data.soundType, new(data));
             }
         }
 

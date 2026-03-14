@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9404a0fc728b648a8a642bfc58d7376b, type: 3}
-  m_Name: Yellow Chest
+  m_Name: Yellow Chest 1
   m_EditorClassIdentifier: 
-  <RewardName>k__BackingField: Chest
+  <RewardName>k__BackingField: Yellow Chest
   <Icon>k__BackingField: {fileID: 21300000, guid: 79998b14a6872495887ed5bc7dc8e3f2, type: 3}
   <CoinValue>k__BackingField: 10
   <Rarity>k__BackingField: 0.6

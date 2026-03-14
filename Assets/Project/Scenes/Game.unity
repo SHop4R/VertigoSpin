@@ -213,6 +213,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 700816167, guid: a82f8bd92798b4f87803164d19f4d8d6, type: 3}
+      propertyPath: allRewards.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1483229764867052975, guid: a82f8bd92798b4f87803164d19f4d8d6, type: 3}
       propertyPath: m_RootOrder
       value: 2

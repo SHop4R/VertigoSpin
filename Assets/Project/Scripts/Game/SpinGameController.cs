@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using VertigoSpin.Project.Scripts.Audio;
 using VertigoSpin.Project.Scripts.Data;
@@ -8,31 +9,25 @@ namespace VertigoSpin.Project.Scripts.Game
 {
     public sealed class SpinGameController : MonoBehaviour
     {
-        [Header("Wheel Configs")]
-        [SerializeField] private WheelConfig bronzeConfig;
-        [SerializeField] private WheelConfig silverConfig;
-        [SerializeField] private WheelConfig goldConfig;
+        private readonly Dictionary<WheelType, WheelConfig> _wheelConfigs = new();
 
         private ZoneManager _zoneManager;
         private InventoryManager _inventory;
         private GameState _currentState;
         private int _pendingVictoryCoins;
 
-        private WheelConfig GetConfigForType(WheelType type) => type switch
-        {
-            WheelType.Bronze => bronzeConfig,
-            WheelType.Silver => silverConfig,
-            WheelType.Gold => goldConfig,
-            _ => bronzeConfig
-        };
-
         private void Start()
         {
+            foreach (WheelConfig config in Resources.LoadAll<WheelConfig>("Wheels"))
+            {
+                _wheelConfigs.TryAdd(config.WheelType, config);
+            }
+
             _zoneManager = new();
             _inventory = new();
             _currentState = GameState.WaitingToSpin;
 
-            EventManager.SpinEvents.FireWheelChanged(GetConfigForType(WheelType.Bronze));
+            EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[WheelType.Bronze]);
             EventManager.ZoneEvents.FireZoneAdvanced(1);
         }
 
@@ -89,7 +84,7 @@ namespace VertigoSpin.Project.Scripts.Game
             }
 
             EventManager.ZoneEvents.FireZoneAdvanced(_zoneManager.CurrentZone);
-            EventManager.SpinEvents.FireWheelChanged(GetConfigForType(_zoneManager.CurrentWheelType));
+            EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[_zoneManager.CurrentWheelType]);
             _currentState = GameState.WaitingToSpin;
         }
 
@@ -111,7 +106,7 @@ namespace VertigoSpin.Project.Scripts.Game
             _currentState = GameState.WaitingToSpin;
             AudioManager.Instance.PlaySound(Sound.Revive);
             HapticManager.Instance.PlayHaptic(HapticType.Success);
-            EventManager.SpinEvents.FireWheelChanged(GetConfigForType(_zoneManager.CurrentWheelType));
+            EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[_zoneManager.CurrentWheelType]);
         }
 
         private void OnGameOver()
@@ -127,7 +122,7 @@ namespace VertigoSpin.Project.Scripts.Game
             _inventory.Clear();
             _currentState = GameState.WaitingToSpin;
 
-            EventManager.SpinEvents.FireWheelChanged(GetConfigForType(WheelType.Bronze));
+            EventManager.SpinEvents.FireWheelChanged(_wheelConfigs[WheelType.Bronze]);
             EventManager.ZoneEvents.FireZoneAdvanced(1);
         }
 

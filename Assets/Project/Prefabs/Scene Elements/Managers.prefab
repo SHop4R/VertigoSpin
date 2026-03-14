@@ -44,10 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b2b35840bc1d4c93a9b3b71e611905d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allRewards:
-  - {fileID: 11400000, guid: d0cc4860c7b2d4ef9af24d0c2d409a6f, type: 2}
-  - {fileID: 11400000, guid: 742bb57ca142d456bb5da08eefb67c10, type: 2}
-  - {fileID: 11400000, guid: 5954690f265c64b27be62447b7c423d1, type: 2}
 --- !u!1 &886382157
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,9 +132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f5dcc47dff843308461fba81c82b2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bronzeConfig: {fileID: 11400000, guid: db4db5832c31046dea87ab9079d18560, type: 2}
-  silverConfig: {fileID: 11400000, guid: 21e00243bccb9489d9a9c564a2bfa1fb, type: 2}
-  goldConfig: {fileID: 11400000, guid: 8df33a053b48a454d857172ba73f3f0f, type: 2}
 --- !u!1 &1483229764471527451
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,29 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab0df47d5c84ad2a14e1ade28b2d2de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configs:
-  - <Type>k__BackingField: 0
-    <Config>k__BackingField: {fileID: 11400000, guid: 15e31ac165d7ba2408e9e0570479d9c9, type: 2}
-  - <Type>k__BackingField: 1
-    <Config>k__BackingField: {fileID: 11400000, guid: e29fe06be261456469c1c257722f505d, type: 2}
-  - <Type>k__BackingField: 2
-    <Config>k__BackingField: {fileID: 11400000, guid: 367987368177b2f49b5997e545be72f3, type: 2}
-  - <Type>k__BackingField: 3
-    <Config>k__BackingField: {fileID: 11400000, guid: 5268f450874f1584db9639ef8374dbc1, type: 2}
-  - <Type>k__BackingField: 4
-    <Config>k__BackingField: {fileID: 11400000, guid: b00ffd81405f9574794bd379f007bea7, type: 2}
-  - <Type>k__BackingField: 5
-    <Config>k__BackingField: {fileID: 11400000, guid: ffdc97a006558874390ee1e5f9ad47aa, type: 2}
-  - <Type>k__BackingField: 6
-    <Config>k__BackingField: {fileID: 11400000, guid: cdfced1e7e3a3d141940bc620c6e2f70, type: 2}
-  - <Type>k__BackingField: 7
-    <Config>k__BackingField: {fileID: 11400000, guid: 5199fb7721051864b87beeb9038bb27d, type: 2}
-  - <Type>k__BackingField: 8
-    <Config>k__BackingField: {fileID: 11400000, guid: e01d5aadb74ef44498c23be3d6cf6438, type: 2}
-  - <Type>k__BackingField: 9
-    <Config>k__BackingField: {fileID: 11400000, guid: 30c3c923a07e81a41a1d65f55a8cc019, type: 2}
-  - <Type>k__BackingField: 10
-    <Config>k__BackingField: {fileID: 11400000, guid: ebbdc6d79336a4e418cd60f222ba6636, type: 2}
 --- !u!1 &1483229764776647873
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,4 +361,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 916e4b6f15c673041bb4bbaf31a7e09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundData: []
