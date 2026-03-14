@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: WheelTick
   m_EditorClassIdentifier: 
   soundType: 2
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 8ed144f2dcdbd497d90156afaf76e77a, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ButtonClick
   m_EditorClassIdentifier: 
   soundType: 0
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 30941fb501fe24afab1526e5201c674c, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

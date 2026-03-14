@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CollectAll
   m_EditorClassIdentifier: 
   soundType: 8
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 46215fcb4c7d140ffb8c9a1cd4053c39, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

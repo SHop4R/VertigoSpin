@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: WheelSpin
   m_EditorClassIdentifier: 
   soundType: 1
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 79ac7ce3102f347a7b5961e3cbce92b6, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

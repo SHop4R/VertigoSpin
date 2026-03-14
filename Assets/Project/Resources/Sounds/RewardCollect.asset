@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: RewardCollect
   m_EditorClassIdentifier: 
   soundType: 3
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: dc6436f16ac78460ea9381646873fafc, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

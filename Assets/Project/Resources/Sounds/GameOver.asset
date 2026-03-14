@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: GameOver
   m_EditorClassIdentifier: 
   soundType: 9
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: be04179e82e6d424fbb95e19bbdfeb59, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

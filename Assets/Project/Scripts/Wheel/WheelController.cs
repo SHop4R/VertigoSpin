@@ -126,9 +126,6 @@ namespace VertigoSpin.Project.Scripts.Wheel
 
         private void HandleSpin()
         {
-            AudioManager.Instance.PlaySound(Sound.ButtonClick);
-            HapticManager.Instance.PlayHaptic(HapticType.Click);
-
             if (_gameController)
                 _gameController.RequestSpin();
         }

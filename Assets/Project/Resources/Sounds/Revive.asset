@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Revive
   m_EditorClassIdentifier: 
   soundType: 5
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: c41cc1c88356c457ea666494f79fb6fc, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0

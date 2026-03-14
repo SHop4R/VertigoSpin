@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ZoneAdvance
   m_EditorClassIdentifier: 
   soundType: 7
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: 50db5e18f2328449b800268c9e6011ff, type: 3}
   pickRandom: 0
   <Loop>k__BackingField: 0
   <PlayOnAwake>k__BackingField: 0
