@@ -191,6 +191,11 @@ MonoBehaviour:
     <DefaultPoolSize>k__BackingField: 41
     <MaxPoolSize>k__BackingField: 82
     <PreGenerate>k__BackingField: 0
+  flyingRewardPoolStats:
+    <Prefab>k__BackingField: {fileID: 2918799233969302144, guid: a1cba476981f247b7ab2ad2dcc3ff98b, type: 3}
+    <DefaultPoolSize>k__BackingField: 3
+    <MaxPoolSize>k__BackingField: 6
+    <PreGenerate>k__BackingField: 0
 --- !u!1 &1483229764555869230
 GameObject:
   m_ObjectHideFlags: 0
