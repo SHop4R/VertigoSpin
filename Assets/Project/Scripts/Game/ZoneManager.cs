@@ -4,7 +4,7 @@ namespace VertigoSpin.Project.Scripts.Game
 {
     public sealed class ZoneManager
     {
-        private const int MaxZone = 41;
+        private const int MaxZone = 61;
         private const int SafeZoneInterval = 5;
         private const int SuperZoneInterval = 30;
 

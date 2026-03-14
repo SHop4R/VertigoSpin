@@ -27,7 +27,7 @@ namespace VertigoSpin.Project.Scripts.UI
         [SerializeField] private Color currentZoneTextColor = new(0.2f, 0.6f, 1f, 1f);
         [SerializeField] private Color passedZoneTint = new(0.3f, 0.3f, 0.3f, 1f);
 
-        private const int MaxZone = 41;
+        private const int MaxZone = 61;
         private const int SafeZoneInterval = 5;
         private const int SuperZoneInterval = 30;
         private const float ScrollDuration = 0.3f;
@@ -64,7 +64,7 @@ namespace VertigoSpin.Project.Scripts.UI
         private void OnEnable() => EventManager.ZoneEvents.OnZoneAdvanced += HandleZoneAdvanced;
         private void OnDisable() => EventManager.ZoneEvents.OnZoneAdvanced -= HandleZoneAdvanced;
 
-        private void Initialize(int totalZones = MaxZone)
+        private void Initialize(int totalZones = MaxZone - 1)
         {
             _totalZones = totalZones;
             _currentZone = 1;
@@ -157,8 +157,11 @@ namespace VertigoSpin.Project.Scripts.UI
             UpdateNextSpinLabels(zone);
             ScrollToZone(zone, instant: false);
 
-            AudioManager.Instance.PlaySound(Sound.ZoneAdvance);
-            HapticManager.Instance.PlayHaptic(HapticType.LightImpact);
+            if (zone > 1)
+            {
+                AudioManager.Instance.PlaySound(Sound.ZoneAdvance);
+                HapticManager.Instance.PlayHaptic(HapticType.LightImpact);
+            }
         }
 
         private void UpdateColors(int currentZone)
@@ -236,7 +239,7 @@ namespace VertigoSpin.Project.Scripts.UI
                 fitter.enabled = false;
 
             // Set container size manually
-            float containerWidth = MaxZone * CardStride - CardSpacing;
+            float containerWidth = (MaxZone - 1) * CardStride - CardSpacing;
             _containerRect.sizeDelta = new(containerWidth, _viewportRect.rect.height);
         }
 
