@@ -101,13 +101,13 @@ git clone https://github.com/SHop4R/VertigoSpin.git
 ### Scene Flow
 
 ```
-┌──────────────────────┐           ┌──────────────────────┐
-│    LoadingScreen      │  async    │        Game           │
-│    (Build Index 0)    │ ───────►  │    (Build Index 1)    │
-│                       │   load    │                       │
-│  ILoadingStep Pipeline│           │   Main Gameplay       │
-│  ───► Fade Out        │           │   Scene               │
-└──────────────────────┘           └──────────────────────┘
+┌───────────────────────┐           ┌──────────────────────┐
+│    LoadingScreen      │  async    │        Game          │
+│    (Build Index 0)    │ ───────►  │    (Build Index 1)   │
+│                       │   load    │                      │
+│ ILoadingStep Pipeline │           │   Main Gameplay      │
+│  ───► Fade Out        │           │   Scene              │
+└───────────────────────┘           └──────────────────────┘
 ```
 
 ### Manager Singletons
@@ -116,7 +116,7 @@ All managers inherit from `MonoSingleton<T>` (lazy find-or-create):
 
 ```
                        ┌───────────────────┐
-                       │  MonoSingleton<T>  │
+                       │  MonoSingleton<T> │
                        └─────────┬─────────┘
            ┌───────────┬─────────┼─────────┬───────────┐
            ▼           ▼         ▼         ▼           ▼
